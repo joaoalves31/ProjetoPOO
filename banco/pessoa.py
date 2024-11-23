@@ -1,10 +1,12 @@
 from conta_corrente import ContaCorrente
 from conta_poupanca import ContaPoupanca
+from titular import Titular
 
-Class Cliente:
-    def __init__(self, nome: str, cpf: str):
-    self.nome = nome
-    self.cpf = cpf
+class Pessoa:
+    def __init__(self, nome: str, cpf: str, idade: int):
+        self.nome = nome
+        self.cpf = cpf
+        self.idade = idade
 
 def criar_conta(self, tipo: str):
     if tipo == "corrente":

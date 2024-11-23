@@ -1,6 +1,9 @@
-from conta_bancaria import ContaBancaria
+from conta_bancaria import ContaBancaria, Titular
 
 class ContaPoupanca(ContaBancaria):
-    def __init__(self, numero: int, titular: str, saldo: float = 0.0, rendimento: float = 0.0): 
-        super().__init__(numero, titular, saldo)
+    def __init__(self, saldo: float, titular: Titular, numero_conta: int, juros: float):
+        super().__init__(saldo, titular, numero_conta, tipo="Poupança")
         self.juros = juros
+
+    def aplicar_juros(self,juros):
+        pass
