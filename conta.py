@@ -1,8 +1,9 @@
 import mysql.connector
 from gerencia_banco_dados import gerencia_banco_dados 
 from titular import Titular
+from conta_interface import ContaInterface
 
-class Conta:
+class Conta(ContaInterface):
     proximo_numero_conta = 666  # Variável de classe para manter o próximo número de conta
 
     def __init__(self, titular: "Titular", tipo: str, saldo: float = 0.0):
