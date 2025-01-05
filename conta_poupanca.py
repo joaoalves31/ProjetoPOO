@@ -1,15 +1,12 @@
 from conta import Conta
-
+# Classe ContaPoupanca que herda Conta
 class ContaPoupanca(Conta):
-    def __init__(self, saldo, titular, numero_conta, tipo, juros):
-        super().__init__(saldo, titular, numero_conta, tipo)
+    def __init__(self, titular, tipo='ContaPoupanca', saldo = 0.0, juros=0.0):
+        super().__init__(titular, tipo, saldo)
         self.__juros = juros
 
-    @property
-    def juros(self):
-        return self.__juros
-
-    def aplicar_juros(self):
-        # Implementação específica para aplicar juros
-        self.__saldo += self.__saldo * self.__juros / 100
-        self.atualizar_saldo()
+    def sacar(self, valor):
+        if valor <= self.get_saldo():
+            self.set_saldo(self.get_saldo() - valor)
+            return True
+        return False

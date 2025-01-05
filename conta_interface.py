@@ -16,12 +16,6 @@ class ContaInterface(ABC):
 
     @property
     @abstractmethod
-    def numero_conta(self):
-        """Retorna o número da conta."""
-        pass
-
-    @property
-    @abstractmethod
     def tipo(self):
         """Retorna o tipo da conta."""
         pass
@@ -47,11 +41,16 @@ class ContaInterface(ABC):
         pass
 
     @abstractmethod
+    def atualizar_saldo_apos_login(self, nome_titular):
+        """Atualiza o saldo da conta no banco de dados após o login."""
+        pass
+
+    @abstractmethod
     def registrar_transacao(self, tipo_transacao, valor: float, conta_destino: int):
         """Registra uma transação no banco de dados."""
         pass
 
     @abstractmethod
-    def get_numero_conta(self):
-        """Retorna o número da conta de forma explícita."""
+    def cadastrar_chave_pix(self, chave, tipo):
+        """Cadastra uma chave PIX na conta."""
         pass
