@@ -259,7 +259,6 @@ class BancoApp:
         frame.pack(expand=True)
 
         ttk.Label(frame, text="Transferência", font=("Helvetica", 16)).pack(pady=10)
-
         ttk.Label(frame, text="CPF do destinatário:").pack(pady=5)
         cpf_entry = ttk.Entry(frame)
         cpf_entry.pack(pady=5)
@@ -268,30 +267,27 @@ class BancoApp:
         valor_entry = ttk.Entry(frame)
         valor_entry.pack(pady=5)
 
-        def realizar_transferencia():
+        def realizar_transferencia(tipo_transferencia):
             cpf_destinatario = cpf_entry.get().strip()
             try:
                 valor = float(valor_entry.get())
                 if valor <= 0:
                     raise ValueError("O valor deve ser maior que zero.")
 
-                # Procurar conta do destinatário
                 conta_destinatario = Conta.procurar_conta(cpf_destinatario)
                 if not conta_destinatario:
                     raise ValueError("Conta do destinatário não encontrada.")
 
-                # Verificar e realizar saque
-                if not conta.sacar(valor):
-                    raise ValueError("Saldo insuficiente.")
-
-                # Depositar na conta do destinatário
-                conta_destinatario.depositar(valor)
-
-                # Atualizar saldos nos arquivos
+                if tipo_transferencia == "saldo" or not hasattr(conta, "limite"):
+                    if not conta.sacar(valor):
+                        raise ValueError("Saldo insuficiente.")
+                elif tipo_transferencia == "limite":
+                    if not conta.transferir_com_limite(valor, conta_destinatario):
+                        raise ValueError("Saldo e limite insuficientes.")
+                
                 conta.atualizar_saldo()
                 conta_destinatario.atualizar_saldo()
 
-                # Registrar transações
                 conta.registrar_transacao(f"Transferência de R$ {valor:.2f} para {cpf_destinatario}", valor)
                 conta_destinatario.registrar_transacao(f"Recebimento de R$ {valor:.2f} da conta de {conta.titular}", valor)
 
@@ -300,7 +296,13 @@ class BancoApp:
             except ValueError as ve:
                 messagebox.showerror("Erro", str(ve))
 
-        ttk.Button(frame, text="Confirmar", command=realizar_transferencia).pack(pady=10)
+        if isinstance(conta, ContaCorrente): #confere se é corrente(pix com saldo da conta e pix no crédito) ou poupança(apenas pix com o saldo da conta)
+            ttk.Label(frame, text="Tipo de transferência:").pack(pady=5)
+            ttk.Button(frame, text="Usar Saldo", command=lambda: realizar_transferencia("saldo")).pack(pady=5)
+            ttk.Button(frame, text="Usar Limite", command=lambda: realizar_transferencia("limite")).pack(pady=5)
+        else:
+            ttk.Button(frame, text="Transferir", command=lambda: realizar_transferencia("saldo")).pack(pady=5)
+
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
 
 
