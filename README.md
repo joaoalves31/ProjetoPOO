@@ -78,7 +78,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
       <a href="#">
         <img src="https://avatars.githubusercontent.com/u/128437559?v=4" width="100px;" alt="lucamsilveira"/><br>
         <sub>
-          <b>Lchinu</b>
+          <b>lucamsilveira</b>
         </sub>
       </a>
     </td>
