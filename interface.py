@@ -251,6 +251,26 @@ class BancoApp:
         ttk.Button(frame, text="Confirmar", command=realizar_deposito).pack(pady=10)
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
 
+    def tela_historico(self, conta):
+        """Exibe o histórico de transações da conta."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
+        frame.pack(expand=True)
+
+        ttk.Label(frame, text="Histórico de Transações", font=("Helvetica", 16)).pack(pady=10)
+
+        # Obter o histórico de transações da conta
+        historico = conta.consultar_historico()  # Método que lê transações do arquivo transacoes.csv
+        
+        if not historico:
+            ttk.Label(frame, text="Nenhuma transação encontrada.").pack(pady=5)
+        else:
+            for transacao in historico:
+                ttk.Label(frame, text=", ".join(transacao)).pack(anchor="w", pady=2)
+
+        ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=10)
     def tela_transferir(self, conta):
         for widget in self.root.winfo_children():
             widget.destroy()

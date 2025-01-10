@@ -3,6 +3,7 @@ from conta_interface import ContaInterface
 from gerencia_banco_dados import filtro, escrever_arquivo, pegar_linhas_do_arquivo
 import csv
 import re
+from datetime import datetime
 
 class Conta(ContaInterface):
     proximo_numero_conta = 666  # Variável de classe para manter o próximo número de conta
@@ -124,7 +125,7 @@ class Conta(ContaInterface):
             print(f"Erro ao atualizar saldo: {e}")
             return None
 
-    def registrar_transacao(self, descricao: str, valor: float = 0.1, conta_destino: int = None):
+    def registrar_transacao(self, descricao: str, valor: float = 0.1, conta_destino: int = None): 
         # Nomeia o arquivo de transações de forma global
         nome_arquivo = "transacoes.csv"  # Um único arquivo para todas as transações
 
@@ -132,8 +133,11 @@ class Conta(ContaInterface):
         if conta_destino is None:
             conta_destino = self.numero_conta
 
-        # Cria a transação
-        transacao = [str(self.numero_conta), descricao, f"R$ {valor:.2f}"]
+        # Obtém a data e hora atual
+        data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Cria a transação com a data e hora
+        transacao = [str(self.numero_conta), descricao, f"R$ {valor:.2f}", data_hora]
 
         # Escreve a transação no arquivo correspondente
         escrever_arquivo(nome_arquivo, transacao)
