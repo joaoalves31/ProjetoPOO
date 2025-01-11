@@ -46,6 +46,8 @@ class BancoApp:
         ttk.Button(frame, text="Entrar", command=self.verificar_login).grid(row=2, columnspan=2, pady=10)
         ttk.Button(frame, text="Criar Conta", command=self.tela_criar_conta).grid(row=3, columnspan=2, pady=5)
 
+        self.root.bind("<Return>", lambda event: self.verificar_login())
+
     def verificar_login(self):
         login = self.login_entry.get().strip()
         senha = self.senha_entry.get().strip()
@@ -333,8 +335,6 @@ class BancoApp:
             ttk.Button(frame, text="Transferir", command=lambda: realizar_transferencia("saldo")).pack(pady=5)
 
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
-
-
 
 if __name__ == "__main__":
     # Suponha que os arquivos sejam 'titulares.csv' e 'contas.csv'
