@@ -75,7 +75,7 @@ class Conta(ContaInterface):
         """Verifica se o código PIX existe e retorna True se for associado a esta conta."""
         return codigo_pix in self.pix_pendentes
 
-    def transferir(self, conta_destino: int = 0, valor: float = 0.1):
+    def transferir(self, pix_destino: int = 0, valor: float = 0.1):
         if valor <= 0:
             raise ValueError("O valor da transferência deve ser maior que zero.")
         if valor > self.__saldo:
@@ -87,14 +87,19 @@ class Conta(ContaInterface):
         # Atualiza o saldo da conta origem
         self.atualizar_saldo()
         
+        # Recupera a conta destino pelo pix
+        conta_pix = filtro("pix_registros.csv", 0, str(pix_destino), True )
+        if not conta_pix:
+            raise ValueError("Conta PIX destino não encontrada.")
+        
         # Recupera a conta destino
-        conta_dest = filtro("contas.csv", 0, str(conta_destino), True)
+        conta_dest = filtro("contas.csv", 0, conta_pix[0][2], True)
+        
         if conta_dest:
             conta_dest[0][2] = str(float(conta_dest[0][2]) + valor)
             escrever_arquivo("contas.csv", conta_dest[0])  # Atualiza a conta destino
-
-        # Registra a transação
-        self.registrar_transacao('Transferência', valor, conta_destino)
+            
+        return True
 
     def atualizar_saldo(self):
         # Lê todas as linhas do arquivo
@@ -213,14 +218,14 @@ class Conta(ContaInterface):
 
         return True
     
-# Funções auxiliares para validação
+    # Funções auxiliares para validação
 
-def validar_email(self, email: str) -> bool:
-        # Expressão regular para validar o e-mail
-        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return bool(re.match(email_regex, email))
+    def validar_email(self, email: str) -> bool:
+            # Expressão regular para validar o e-mail
+            email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            return bool(re.match(email_regex, email))
 
-def validar_telefone(self, telefone: str) -> bool:
-        # Expressão regular para validar o número de telefone (formato simples)
-        telefone_regex = r'^\(\d{2}\)\s\d{4,5}-\d{4}$'
-        return bool(re.match(telefone_regex, telefone))
+    def validar_telefone(self, telefone: str) -> bool:
+            # Expressão regular para validar o número de telefone (formato simples)
+            telefone_regex = r'^\(\d{2}\)\s\d{4,5}-\d{4}$'
+            return bool(re.match(telefone_regex, telefone))

@@ -325,39 +325,36 @@ class BancoApp:
         frame.pack(expand=True)
 
         ttk.Label(frame, text="Transferência", font=("Helvetica", 16)).pack(pady=10)
-        ttk.Label(frame, text="CPF do destinatário:").pack(pady=5)
-        cpf_entry = ttk.Entry(frame)
-        cpf_entry.pack(pady=5)
+        ttk.Label(frame, text="PIX do destinatário:").pack(pady=5)
+        pix_entry = ttk.Entry(frame)
+        pix_entry.pack(pady=5)
 
         ttk.Label(frame, text="Valor a transferir:").pack(pady=5)
         valor_entry = ttk.Entry(frame)
         valor_entry.pack(pady=5)
 
         def realizar_transferencia(tipo_transferencia):
-            cpf_destinatario = cpf_entry.get().strip()
+            pix_destinatario = pix_entry.get().strip()
             try:
                 valor = float(valor_entry.get())
                 if valor <= 0:
                     raise ValueError("O valor deve ser maior que zero.")
+                
+                conta_destinatario = self.banco.procurar_conta_por_pix(pix_destinatario)
 
-                conta_destinatario = Conta.procurar_conta(cpf_destinatario)
                 if not conta_destinatario:
                     raise ValueError("Conta do destinatário não encontrada.")
-
                 if tipo_transferencia == "saldo" or not hasattr(conta, "limite"):
-                    if not conta.sacar(valor):
+                    if not conta.transferir(pix_destinatario, valor):
                         raise ValueError("Saldo insuficiente.")
                 elif tipo_transferencia == "limite":
-                    if not conta.transferir_com_limite(valor, conta_destinatario):
+                    if not conta.transferir(valor, conta_destinatario):
                         raise ValueError("Saldo e limite insuficientes.")
-                
-                conta.atualizar_saldo()
-                conta_destinatario.atualizar_saldo()
 
-                conta.registrar_transacao(f"Transferência de R$ {valor:.2f} para {cpf_destinatario}", valor)
+                conta.registrar_transacao(f"Transferência de R$ {valor:.2f} para {pix_destinatario}", valor)
                 conta_destinatario.registrar_transacao(f"Recebimento de R$ {valor:.2f} da conta de {conta.titular}", valor)
 
-                messagebox.showinfo("Sucesso", f"Transferência de R$ {valor:.2f} para {cpf_destinatario} realizada com sucesso!")
+                messagebox.showinfo("Sucesso", f"Transferência de R$ {valor:.2f} para {pix_destinatario} realizada com sucesso!")
                 self.tela_principal(conta)
             except ValueError as ve:
                 messagebox.showerror("Erro", str(ve))
