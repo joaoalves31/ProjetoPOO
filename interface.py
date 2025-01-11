@@ -221,35 +221,81 @@ class BancoApp:
             self.tela_login()  # Volta à tela de login
 
     def tela_depositar(self, conta: Conta):
+        """Tela inicial para inserir o valor do depósito."""
         for widget in self.root.winfo_children():
             widget.destroy()
 
         frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
         frame.pack(expand=True)
 
-        ttk.Label(frame, text="Depósito", font=("Helvetica", 16)).pack(pady=10)
-
-        ttk.Label(frame, text="Valor a depositar:").pack(pady=5)
+        ttk.Label(frame, text="Depósito via PIX", font=("Helvetica", 16)).pack(pady=10)
+        ttk.Label(frame, text="Insira o valor a depositar:").pack(pady=5)
         valor_entry = ttk.Entry(frame)
         valor_entry.pack(pady=5)
 
-        def realizar_deposito():
+        def gerar_pix():
             try:
                 valor = float(valor_entry.get())
                 if valor <= 0:
-                    raise ValueError("O valor deve ser maior que zero.")
-
-                # Chamando o método depositar da classe Conta
-                conta.depositar(valor)
-
-                messagebox.showinfo("Sucesso", f"Depósito de R$ {valor:.2f} realizado com sucesso!")
-                self.tela_principal(conta)
-
-            except ValueError as ve:
-                messagebox.showerror("Erro", str(ve))
-
-        ttk.Button(frame, text="Confirmar", command=realizar_deposito).pack(pady=10)
+                    raise ValueError("O valor do depósito deve ser maior que zero.")
+                chave_pix = conta.gerar_pix_deposito(valor)
+                self.tela_codigo_pix(conta, chave_pix, valor)
+            except ValueError as e:
+                messagebox.showerror("Erro", str(e))
+        
+        ttk.Button(frame, text="Confirmar", command=gerar_pix).pack(pady=10)
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
+
+
+    def tela_codigo_pix(self, conta: Conta, chave_pix: str, valor: float):
+        """Tela que exibe o código PIX gerado e permite copiar."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
+        frame.pack(expand=True)
+
+        ttk.Label(frame, text="Código PIX Gerado", font=("Helvetica", 16)).pack(pady=10)
+        ttk.Label(frame, text=f"Valor: R$ {valor:.2f}").pack(pady=5)
+        pix_label = ttk.Entry(frame)
+        pix_label.insert(0, chave_pix)
+        pix_label.config(state='readonly')
+        pix_label.pack(pady=5)
+
+        def copiar_pix():
+            self.root.clipboard_clear()
+            self.root.clipboard_append(chave_pix)
+            self.root.update()
+            messagebox.showinfo("Código PIX", "Código copiado para a área de transferência.")
+
+        ttk.Button(frame, text="Copiar Código PIX", command=copiar_pix).pack(pady=5)
+        ttk.Button(frame, text="Continuar Depósito", command=lambda: self.tela_validar_pix(conta)).pack(pady=5)
+        ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
+
+    def tela_validar_pix(self, conta: Conta):
+        """Tela para validar o código PIX e completar o depósito."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
+        frame.pack(expand=True)
+
+        ttk.Label(frame, text="Insira o Código PIX para validar o depósito:", font=("Helvetica", 12)).pack(pady=10)
+        pix_entry = ttk.Entry(frame)
+        pix_entry.pack(pady=5)
+
+        def validar_deposito():
+            chave_pix = pix_entry.get()
+            if conta.verificar_pix(chave_pix):
+                valor = conta.concluir_pix_deposito(chave_pix)
+                messagebox.showinfo("Depósito Concluído", f"Depósito de R$ {valor:.2f} realizado com sucesso!")
+                self.tela_principal(conta)
+            else:
+                messagebox.showerror("Erro", "Código PIX inválido ou já utilizado.")
+
+        ttk.Button(frame, text="Confirmar", command=validar_deposito).pack(pady=10)
+        ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
+
 
     def tela_historico(self, conta):
         """Exibe o histórico de transações da conta."""

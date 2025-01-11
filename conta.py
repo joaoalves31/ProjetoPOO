@@ -3,10 +3,12 @@ from conta_interface import ContaInterface
 from gerencia_banco_dados import filtro, escrever_arquivo, pegar_linhas_do_arquivo
 import csv
 import re
+import uuid
 from datetime import datetime
 
 class Conta(ContaInterface):
     proximo_numero_conta = 666  # Variável de classe para manter o próximo número de conta
+    pix_pendentes = {}  # Dicionário para armazenar códigos PIX pendentes
 
     def __init__(self, titular: "Titular", tipo: str, saldo: float = 0.0):
         # Definindo os atributos da conta
@@ -47,6 +49,31 @@ class Conta(ContaInterface):
         # Registra a transação
         self.registrar_transacao("Depósito", valor)
 
+    def concluir_pix_deposito(self, chave_pix: str) -> float:
+        """Valida o PIX e conclui o depósito."""
+        if not self.validar_pix(chave_pix):
+            raise ValueError("Código PIX inválido ou já utilizado.")
+
+        valor = self.pix_pendentes.pop(chave_pix)  # Remove e obtém o valor associado
+        self.depositar(valor)
+        return valor
+
+    
+    def gerar_pix_deposito(self, valor: float) -> str:
+        """Gera um código PIX único para depósito e associa ao valor."""
+        chave_pix = str(uuid.uuid4())  # Gera um código PIX único
+        self.pix_pendentes[chave_pix] = valor
+        return chave_pix
+    
+    def validar_pix(self, chave_pix: str) -> bool:
+        """Verifica se a chave PIX é válida e não foi utilizada."""
+        if chave_pix in self.pix_pendentes:
+            return True
+        return False
+
+    def verificar_pix(self, codigo_pix: str) -> bool:
+        """Verifica se o código PIX existe e retorna True se for associado a esta conta."""
+        return codigo_pix in self.pix_pendentes
 
     def transferir(self, conta_destino: int = 0, valor: float = 0.1):
         if valor <= 0:

@@ -54,3 +54,23 @@ class ContaInterface(ABC):
     def cadastrar_chave_pix(self, chave, tipo):
         """Cadastra uma chave PIX na conta."""
         pass
+
+    @abstractmethod
+    def gerar_pix_deposito(self, valor: float) -> str:
+        """Gera um código PIX único para depósito e associa ao valor."""
+        pass
+
+    @abstractmethod
+    def verificar_pix(self, codigo_pix: str) -> bool:
+        """Verifica se o pix ja existe"""
+        pass
+
+    @abstractmethod
+    def validar_pix(self, chave_pix: str) -> bool:
+        """Verifica se a chave PIX é válida e não foi utilizada."""
+        pass
+
+    @abstractmethod
+    def concluir_pix_deposito(self, chave_pix: str) -> float:
+        """Valida o PIX e conclui o depósito."""
+        pass
