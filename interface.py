@@ -7,6 +7,7 @@ from titular import Titular
 from conta_corrente import ContaCorrente
 from conta_poupanca import ContaPoupanca
 from gerencia_banco_dados import filtro
+from cpf_verificacao import validar_cpf, cpf_existe
 
 # Interface gráfica com tkinter
 class BancoApp:
@@ -122,6 +123,14 @@ class BancoApp:
         login = self.novo_login_entry.get().strip()
         senha = self.nova_senha_entry.get().strip()
         tipo = self.tipo_conta_var.get()
+
+        if not validar_cpf(cpf):
+            messagebox.showerror("Erro", "CPF Inválido")
+            return
+        
+        if cpf_existe(cpf, "contas.csv"):
+            messagebox.showerror("Erro", "CPF já cadastrado.")
+            return
 
         if not nome.isalpha():
             messagebox.showerror("Erro", "O nome deve conter apenas letras.")

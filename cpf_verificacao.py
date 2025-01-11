@@ -1,5 +1,6 @@
 import re
 
+@staticmethod
 def validar_cpf(cpf: str) -> bool:
     # Remove caracteres não numéricos
     cpf = re.sub(r'\D', '', cpf)
