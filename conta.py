@@ -7,16 +7,13 @@ import uuid
 from datetime import datetime
 
 class Conta(ContaInterface):
-    proximo_numero_conta = 666  # Variável de classe para manter o próximo número de conta
-    pix_pendentes = {}  # Dicionário para armazenar códigos PIX pendentes
+    proximo_numero_conta = 666  # Valor inicial padrão
 
     def __init__(self, titular: "Titular", tipo: str, saldo: float = 0.0):
-        # Definindo os atributos da conta
-        self.numero_conta = Conta.proximo_numero_conta  # Atribuindo diretamente o número da conta
+        self.numero_conta = Conta.proximo_numero_conta
         Conta.proximo_numero_conta += 1
         self.__saldo = saldo if saldo is not None else 0.0
-        self.__titular = titular
-        
+        self.__titular = titular 
     @property
     def saldo(self):
         return self.__saldo 

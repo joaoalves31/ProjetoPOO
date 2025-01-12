@@ -382,6 +382,7 @@ class BancoApp:
 if __name__ == "__main__":
     # Suponha que os arquivos sejam 'titulares.csv' e 'contas.csv'
     banco = Banco('titulares.csv', 'contas.csv')  # Passando os dois arquivos para o Banco
+    
 
     # Criação da interface do aplicativo (BancoApp)
     app = BancoApp(banco)
