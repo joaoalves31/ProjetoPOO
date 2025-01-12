@@ -65,3 +65,27 @@ class Banco:
             # Aqui você deve retornar uma instância de Titular
             return Titular(nome, idade, cpf, login, senha)
         return None
+
+    def procurar_conta_por_pix(self, pix):
+        # Procurar pelo pix
+        conta_pix = filtro("pix_registros.csv", 0, pix, True)
+        conta_dados = filtro(self.arquivo_contas, 0, conta_pix[0][2], True) #conta_dados[0][2] é o numero da conta
+        
+        if conta_dados:
+            # Acessando os dados da conta
+            tipo_conta = conta_dados[0][2]  # Tipo da conta (Corrente ou Poupança)
+            saldo = float(conta_dados[0][3])  # Saldo da conta (convertido para float)
+            
+            # Localizar o titular da conta pelo CPF
+            titular = self.procurar_titular_por_cpf(conta_dados[0][1])
+            
+            if titular:
+                # Criando a instância da conta de acordo com o tipo
+                if tipo_conta == "ContaCorrente":
+                    return ContaCorrente(titular, saldo=saldo)
+                elif tipo_conta == "ContaPoupanca":
+                    return ContaPoupanca(titular, saldo=saldo)
+                else:
+                    return Conta(titular, tipo_conta, saldo)
+        
+        return None   
