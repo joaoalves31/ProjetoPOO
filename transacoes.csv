@@ -5,4 +5,15 @@
 669,Depósito,R$ 1000.00,2025-01-10 15:45:22
 666,Depósito,R$ 200.00,2025-01-11 13:28:17
 666,Transferência de R$ 20.00 para maria@gmail.com,R$ 20.00,2025-01-11 14:57:34
-667,Recebimento de R$ 20.00 da conta de <titular.Titular object at 0x0000029D75A1EA20>,R$ 20.00,2025-01-11 14:57:34
+667,Recebimento de R$ 20.00 da conta de <titular.Titular object at 0x0000029D75A1EA20>,R$ 20.00,2025-01-11 14:57:34666,Transferência de R$ 100.00 para teste@gmail.com,R$ 100.00,2025-01-11 22:18:01
+667,Recebimento de R$ 100.00 da conta de <titular.Titular object at 0x00000186AC07C920>,R$ 100.00,2025-01-11 22:18:01
+666,Transferência de R$ 50.00 para maria@gmail.com,R$ 50.00,2025-01-11 22:18:47
+668,Recebimento de R$ 50.00 da conta de <titular.Titular object at 0x00000186AC07C920>,R$ 50.00,2025-01-11 22:18:47
+666,Transferência de R$ 100.00 para maria@gmail.com,R$ 100.00,2025-01-11 22:30:22
+667,Recebimento de R$ 100.00 da conta de <titular.Titular object at 0x0000027FA6A584A0>,R$ 100.00,2025-01-11 22:30:22
+666,Transferência de R$ 30.00 para maria@gmail.com,R$ 30.00,2025-01-11 22:34:58
+667,Recebimento de R$ 30.00 da conta de <titular.Titular object at 0x000001E27633CBF0>,R$ 30.00,2025-01-11 22:34:58
+666,Transferência de R$ 40.00 para maria@gmail.com,R$ 40.00,2025-01-11 22:56:58
+667,Recebimento de R$ 40.00 da conta de <titular.Titular object at 0x000002C0E8EE86B0>,R$ 40.00,2025-01-11 22:56:58
+666,Transferência de R$ 30.00 para maria@gmail.com,R$ 30.00,2025-01-11 22:57:46
+668,Recebimento de R$ 30.00 da conta de <titular.Titular object at 0x000002C0E8EE86B0>,R$ 30.00,2025-01-11 22:57:46

@@ -74,6 +74,7 @@ class Conta(ContaInterface):
     def verificar_pix(self, codigo_pix: str) -> bool:
         """Verifica se o código PIX existe e retorna True se for associado a esta conta."""
         return codigo_pix in self.pix_pendentes
+    
 
     def transferir(self, pix_destino: int = 0, valor: float = 0.1):
         if valor <= 0:
@@ -81,33 +82,52 @@ class Conta(ContaInterface):
         if valor > self.__saldo:
             raise ValueError("Saldo insuficiente para realizar a transferência.")
         
-        # Realiza a transferência, subtraindo da conta origem e somando à conta destino
+        # Subtrai o valor da conta de origem
         self.__saldo -= valor
-        
-        # Atualiza o saldo da conta origem
-        self.atualizar_saldo()
+        self.atualizar_saldo()  # Atualiza o saldo da conta origem
         
         # Recupera a conta destino pelo pix
-        conta_pix = filtro("pix_registros.csv", 0, str(pix_destino), True )
+        conta_pix = filtro("pix_registros.csv", 0, str(pix_destino), True)
         if not conta_pix:
             raise ValueError("Conta PIX destino não encontrada.")
         
         # Recupera a conta destino
         conta_dest = filtro("contas.csv", 0, conta_pix[0][2], True)
-        
         if conta_dest:
+            # Atualiza diretamente o saldo na conta destino
             conta_dest[0][2] = str(float(conta_dest[0][2]) + valor)
-            escrever_arquivo("contas.csv", conta_dest[0])  # Atualiza a conta destino
+            
+            # Atualiza o saldo no arquivo
+            self.atualizar_saldo_conta_destino(conta_dest[0])  # Passa a linha da conta destino para atualização
             
         return True
 
     def atualizar_saldo(self):
         # Lê todas as linhas do arquivo
         linhas = pegar_linhas_do_arquivo("contas.csv")
+
+        for i, linha in enumerate(linhas):
+            if linha[0] == str(self.numero_conta):  # Verifica o número da conta
+                linha[2] = f"{self.__saldo:.2f}"  # Atualiza o saldo no formato string
+                break
+        else:
+            print(f"Conta {self.numero_conta} não encontrada no arquivo.")
+
+        # Reescreve todas as linhas no arquivo sem criar novas linhas
+        try:
+            with open("contas.csv", 'w', newline='', encoding='utf-8') as arquivo:
+                for linha in linhas:
+                    arquivo.write(','.join(linha) + '\n')  # Escreve as linhas como string CSV
+        except Exception as e:
+            print(f"Erro ao atualizar o saldo: {e}")
+
+    def atualizar_saldo_conta_destino(self, conta_dest):
+        # Lê todas as linhas do arquivo
+        linhas = pegar_linhas_do_arquivo("contas.csv")
         
         for i, linha in enumerate(linhas):
-            if linha[0] == str(self.numero_conta):  # Verifica o cpf
-                linhas[i][2] = str(self.__saldo)  # Atualiza o saldo na terceira coluna
+            if linha[0] == str(conta_dest[0]):  # Verifica o número da conta
+                linhas[i] = conta_dest  # Atualiza a linha com a nova conta
                 break
         
         # Reescreve todas as linhas no arquivo
@@ -116,7 +136,7 @@ class Conta(ContaInterface):
                 writer = csv.writer(arquivo)
                 writer.writerows(linhas)
         except Exception as e:
-            print(f"Erro ao atualizar o saldo: {e}")
+            print(f"Erro ao atualizar o saldo da conta destino: {e}")
 
     def atualizar_saldo_apos_login(self, nome_titular):
         try:

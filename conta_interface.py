@@ -41,6 +41,11 @@ class ContaInterface(ABC):
         pass
 
     @abstractmethod
+    def atualizar_saldo_conta_destino(self, conta_dest):
+        """Atualiza o saldo da conta destino no banco de dados."""
+        pass
+    
+    @abstractmethod
     def atualizar_saldo_apos_login(self, nome_titular):
         """Atualiza o saldo da conta no banco de dados após o login."""
         pass
