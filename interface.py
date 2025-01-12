@@ -7,6 +7,7 @@ from titular import Titular
 from conta_corrente import ContaCorrente
 from conta_poupanca import ContaPoupanca
 from gerencia_banco_dados import filtro
+from cpf_verificacao import validar_cpf, cpf_existe
 
 # Interface gráfica com tkinter
 class BancoApp:
@@ -44,6 +45,8 @@ class BancoApp:
 
         ttk.Button(frame, text="Entrar", command=self.verificar_login).grid(row=2, columnspan=2, pady=10)
         ttk.Button(frame, text="Criar Conta", command=self.tela_criar_conta).grid(row=3, columnspan=2, pady=5)
+
+        self.root.bind("<Return>", lambda event: self.verificar_login())
 
     def verificar_login(self):
         login = self.login_entry.get().strip()
@@ -122,6 +125,14 @@ class BancoApp:
         login = self.novo_login_entry.get().strip()
         senha = self.nova_senha_entry.get().strip()
         tipo = self.tipo_conta_var.get()
+
+        if not validar_cpf(cpf):
+            messagebox.showerror("Erro", "CPF Inválido")
+            return
+        
+        if cpf_existe(cpf, "contas.csv"):
+            messagebox.showerror("Erro", "CPF já cadastrado.")
+            return
 
         if not nome.isalpha():
             messagebox.showerror("Erro", "O nome deve conter apenas letras.")
@@ -370,8 +381,6 @@ class BancoApp:
             ttk.Button(frame, text="Transferir", command=lambda: realizar_transferencia("saldo")).pack(pady=5)
 
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
-
-
 
 if __name__ == "__main__":
     # Suponha que os arquivos sejam 'titulares.csv' e 'contas.csv'
