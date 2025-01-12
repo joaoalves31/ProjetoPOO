@@ -276,6 +276,21 @@ class Conta(ContaInterface):
         
         # Funções auxiliares para validação
 
+    def buscar_chaves_pix(self, numero_conta):
+        """Retorna uma lista de chaves PIX cadastradas para o número de conta informado."""
+        chaves = []
+        try:
+            with open("pix_registros.csv", mode="r") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == numero_conta:  # Número da conta corresponde à linha
+                        tipo_chave = row[1]
+                        chave = row[2]
+                        chaves.append((chave, tipo_chave))
+        except FileNotFoundError:
+            pass  # Se o arquivo não for encontrado, retorna lista vazia
+        return chaves    
+
     def validar_email(self, email: str) -> bool:
             # Expressão regular para validar o e-mail
             email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
