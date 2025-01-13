@@ -245,22 +245,23 @@ class BancoApp:
                     chaves_pix.append(conta_associada)  # Adiciona o número da conta associado ao CPF
         return chaves_pix        
 
-    def tela_chaves_pix(self):
-        # Verifica se o master existe antes de criar uma nova janela
-        if hasattr(self, 'master'):
-            nova_janela = tk.Toplevel(self.master)
+    def tela_chaves_pix(self, conta):
+        # Verifica se o root (janela principal) existe antes de criar uma nova janela
+        if hasattr(self, 'root'):  # Mudamos de 'master' para 'root'
+            nova_janela = tk.Toplevel(self.root)  # Usando self.root ao invés de self.master
             nova_janela.title("Chaves PIX")
             nova_janela.geometry("400x300")
-            # Adicione o conteúdo para a nova janela aqui, como um texto ou lista de chaves.
-            ttk.Label(nova_janela, text="Aqui você pode visualizar suas chaves PIX.").pack()
         else:
-            print("Erro: master não foi definido corretamente.")
+            print("Erro: root não foi definido corretamente.")
+            return
 
         # Criar a lista de chaves Pix
-        if conta["chaves_pix"]:
+        chaves_pix = conta.buscar_chaves_pix(conta.numero_conta)  # Obter as chaves Pix dessa conta
+
+        if chaves_pix:
             listbox = tk.Listbox(nova_janela)
-            for chave in conta["chaves_pix"]:
-                listbox.insert(tk.END, chave)
+            for chave, tipo in chaves_pix:  # Considerando que 'chaves_pix' é uma lista de tuplas (chave, tipo)
+                listbox.insert(tk.END, f"{tipo}: {chave}")
             listbox.pack(pady=20)
         else:
             label_nenhuma_chave = tk.Label(nova_janela, text="Nenhuma chave Pix cadastrada.")
@@ -268,7 +269,7 @@ class BancoApp:
 
         # Botão de Voltar
         botao_voltar = ttk.Button(nova_janela, text="Voltar", command=nova_janela.destroy)
-        botao_voltar.pack(pady=10)        
+        botao_voltar.pack(pady=10)    
 
     def tela_depositar(self, conta: Conta):
         """Tela inicial para inserir o valor do depósito."""
