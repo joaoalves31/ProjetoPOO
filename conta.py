@@ -192,6 +192,7 @@ class Conta(ContaInterface):
         # Escreve a transação no arquivo correspondente
         escrever_arquivo(nome_arquivo, transacao)
 
+
     def consultar_historico_por_nome(self, nome_titular: str):
         """Consulta o histórico de transações usando o nome do titular."""
         
@@ -221,9 +222,7 @@ class Conta(ContaInterface):
 
         return historico if historico else f"Nenhuma transação encontrada para a conta '{numero_conta}'."
 
-
-
-    def consultar_historico(self):
+    '''def consultar_historico(self):
         historico = []
         
         try:
@@ -264,7 +263,7 @@ class Conta(ContaInterface):
         except Exception as e:
             print(f"Erro inesperado: {e}")
         
-        return historico
+        return historico'''
     
    
     def cadastrar_chave_pix(self, chave: str, tipo: str, numero_conta: str):

@@ -353,7 +353,7 @@ class BancoApp:
             for transacao in historico:
                 ttk.Label(frame, text=", ".join(transacao)).pack(anchor="w", pady=2)
 
-        ttk.Button(frame, text="Voltar", command=self.tela_principal).pack(pady=10)
+        ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=10)
 
     def tela_transferir(self, conta):
         for widget in self.root.winfo_children():
