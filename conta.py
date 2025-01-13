@@ -5,6 +5,7 @@ import csv
 import re
 import uuid
 from datetime import datetime
+from cpf_verificacao import validar_cpf
 
 class Conta(ContaInterface):
     proximo_numero_conta = 666  # Valor inicial padrão
@@ -222,6 +223,50 @@ class Conta(ContaInterface):
 
 
 
+    def consultar_historico(self):
+        historico = []
+        
+        try:
+            with open('transacoes.csv', 'r') as arquivo:
+                for linha in arquivo:
+                    # Ignora linhas em branco
+                    if not linha.strip():
+                        continue
+                    
+                    dados = linha.strip().split(',')
+                    
+                    # Ignora transações mal formatadas (não tem 4 campos)
+                    if len(dados) != 4:
+                        print(f"Formato inválido na linha (ignorando): {linha.strip()}")
+                        continue
+                    
+                    numero_conta, transacao, valor, data = dados
+                    
+                    # Verifica se a conta corresponde
+                    if numero_conta == str(self.numero_conta):
+                        # Ignora transações que tenham referências a objetos Titular
+                        if '<titular.Titular object at' in transacao:
+                            print(f"Transação com objeto Titular ignorada: {transacao}")
+                            continue
+                        
+                        # Tenta garantir que o valor da transação seja um número válido
+                        try:
+                            valor_float = float(valor.replace('R$', '').replace(' ', '').replace(',', '.'))
+                        except ValueError:
+                            print(f"Valor inválido na transação (ignorando): {valor}")
+                            continue
+                        
+                        # Adiciona a transação válida ao histórico
+                        historico.append((transacao, f"R$ {valor_float:.2f}", data))
+                        
+        except FileNotFoundError as e:
+            print(f"Erro ao acessar o arquivo de transações: {e}")
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+        
+        return historico
+    
+   
     def cadastrar_chave_pix(self, chave: str, tipo: str, numero_conta: str):
         nome_arquivo = "pix_registros.csv"
         linhas = pegar_linhas_do_arquivo(nome_arquivo)
@@ -238,7 +283,7 @@ class Conta(ContaInterface):
 
         # Valida a chave de acordo com o tipo
         if tipo == "CPF":
-            if not self.validar_cpf(chave):
+            if not validar_cpf(chave):  # Agora usa a função importada
                 print("CPF inválido!")
                 return False
         elif tipo == "E-mail":
@@ -258,8 +303,23 @@ class Conta(ContaInterface):
         escrever_arquivo(nome_arquivo, dados)  # Função já existente para adicionar ao arquivo
 
         return True
-    
-    # Funções auxiliares para validação
+        
+        # Funções auxiliares para validação
+
+    def buscar_chaves_pix(self, numero_conta):
+        """Retorna uma lista de chaves PIX cadastradas para o número de conta informado."""
+        chaves = []
+        try:
+            with open("pix_registros.csv", mode="r") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == numero_conta:  # Número da conta corresponde à linha
+                        tipo_chave = row[1]
+                        chave = row[2]
+                        chaves.append((chave, tipo_chave))
+        except FileNotFoundError:
+            pass  # Se o arquivo não for encontrado, retorna lista vazia
+        return chaves    
 
     def validar_email(self, email: str) -> bool:
             # Expressão regular para validar o e-mail

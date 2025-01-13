@@ -6,7 +6,7 @@ from conta_poupanca import ContaPoupanca
 import csv
 
 class Banco:
-    def __init__(self, arquivo_titulares: str, arquivo_contas: str):
+    def __init__(self, arquivo_titulares="titulares.csv", arquivo_contas="contas.csv"):
             self.arquivo_titulares = arquivo_titulares
             self.arquivo_contas = arquivo_contas
 

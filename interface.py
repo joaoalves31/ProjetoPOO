@@ -181,6 +181,7 @@ class BancoApp:
             ttk.Button(frame, text="Depositar", command=lambda: self.tela_depositar(conta)).pack(pady=5)
             ttk.Button(frame, text="Transferir", command=lambda: self.tela_transferir(conta)).pack(pady=5)
             ttk.Button(frame, text="Histórico", command=lambda: self.tela_historico(conta)).pack(pady=5)
+            ttk.Button(frame, text="Ver Chaves PIX", command=lambda: self.tela_chaves_pix(conta)).pack(pady=5)
             ttk.Button(frame, text="Cadastrar Chave PIX", command=lambda: self.cadastrar_chave_pix_tela(conta)).pack(pady=5)
             ttk.Button(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
 
@@ -230,6 +231,30 @@ class BancoApp:
             for widget in self.root.winfo_children():
                 widget.destroy()
             self.tela_login()  # Volta à tela de login
+
+    def tela_chaves_pix(self, conta):
+        # Criação da nova janela
+        nova_janela = tk.Toplevel(self.master)
+        nova_janela.title("Chaves Pix Cadastradas")
+        nova_janela.geometry("400x300")
+
+        # Criar label de conta
+        label_conta = tk.Label(nova_janela, text=f"Chaves Pix para Conta: {conta['numero_conta']}")
+        label_conta.pack(pady=10)
+
+        # Criar a lista de chaves Pix
+        if conta["chaves_pix"]:
+            listbox = tk.Listbox(nova_janela)
+            for chave in conta["chaves_pix"]:
+                listbox.insert(tk.END, chave)
+            listbox.pack(pady=20)
+        else:
+            label_nenhuma_chave = tk.Label(nova_janela, text="Nenhuma chave Pix cadastrada.")
+            label_nenhuma_chave.pack(pady=10)
+
+        # Botão de Voltar
+        botao_voltar = ttk.Button(nova_janela, text="Voltar", command=nova_janela.destroy)
+        botao_voltar.pack(pady=10)        
 
     def tela_depositar(self, conta: Conta):
         """Tela inicial para inserir o valor do depósito."""
@@ -391,5 +416,3 @@ if __name__ == "__main__":
     
     # Inicializar a interface gráfica
     app.root.mainloop()
-
-
