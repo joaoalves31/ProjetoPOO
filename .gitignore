@@ -22,3 +22,7 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+
+# Ignore Python specific files
+__pycache__/
+*.pyc
