@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import customtkinter as ctk
 from banco import Banco
 from conta import Conta
 from pessoa import Pessoa
@@ -13,18 +14,20 @@ from cpf_verificacao import validar_cpf, cpf_existe
 class BancoApp:
     def __init__(self, banco):
         self.banco = banco
-        self.transacoes = []  # Lista para armazenar as transações
-        #self.diretorio_dados = banco.diretorio_dados
+        self.transacoes = []  
         self.root = tk.Tk()
-        self.root.geometry("500x400")
-        self.root.title("Sistema Bancário")
-        self.root.configure(bg="#34495e")
+        self.root.geometry("400x600")
+        self.root.title("Seu Banco")
+        self.root.configure(bg="#f0f0f0")
+
+        ctk.set_appearance_mode("Dark")  
+        ctk.set_default_color_theme("green")
         
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("TLabel", background="#ecf0f1", font=("Helvetica", 12))
-        style.configure("TButton", background="#3498db", font=("Helvetica", 10, "bold"), padding=10)
-        style.map("TButton", background=[("active", "#2980b9")])
+        style.configure("TLabel", font=("Roboto", 12), padding=10)
+        style.configure("TButton", font=("Roboto", 10, "bold"), padding=10)
+        style.map("TButton")
 
         self.tela_login()
 
@@ -35,17 +38,38 @@ class BancoApp:
         frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
         frame.pack(expand=True)
 
-        ttk.Label(frame, text="Login:", font=("Helvetica", 12)).grid(row=0, column=0, sticky="w")
-        self.login_entry = ttk.Entry(frame, font=("Helvetica", 12))
-        self.login_entry.grid(row=0, column=1, pady=5)
+        # Login Label
+        login_label = ctk.CTkLabel(
+            master=frame,
+            text="Bem-vindo ao Seu Banco!",
+            font=("Roboto", 17, "bold"),
+            text_color="Green",
+        )
+        login_label.pack(pady=20)
 
-        ttk.Label(frame, text="Senha:", font=("Helvetica", 12)).grid(row=1, column=0, sticky="w")
-        self.senha_entry = ttk.Entry(frame, show="*", font=("Helvetica", 12))
-        self.senha_entry.grid(row=1, column=1, pady=5)
+        # Username Label and Entry
+        username_label = ctk.CTkLabel(master=frame, text="Login:", text_color="Green", font=("Roboto", 12, "bold"))
+        username_label.pack()
+        self.login_entry = ctk.CTkEntry(master=frame, width=200, font=("Roboto", 12))
+        self.login_entry.pack(pady=5)
 
-        ttk.Button(frame, text="Entrar", command=self.verificar_login).grid(row=2, columnspan=2, pady=10)
-        ttk.Button(frame, text="Criar Conta", command=self.tela_criar_conta).grid(row=3, columnspan=2, pady=5)
+        # Password Label and Entry
+        password_label = ctk.CTkLabel(master=frame, text="Senha:", text_color="Green", font=("Roboto", 12, "bold"))
+        password_label.pack()
+        self.senha_entry = ctk.CTkEntry(master=frame, width=200, show="*", font=("Roboto", 12))
+        self.senha_entry.pack(pady=5)
 
+        # Login and Create Account Buttons
+        login_button = ctk.CTkButton(
+            master=frame, text="Entrar", command=self.verificar_login
+        )
+        login_button.pack(pady=10)
+        create_account_button = ctk.CTkButton(
+            master=frame, text="Criar Conta", command=self.tela_criar_conta
+        )
+        create_account_button.pack()
+
+        # Bind Enter key to login function
         self.root.bind("<Return>", lambda event: self.verificar_login())
 
     def verificar_login(self):
@@ -77,7 +101,7 @@ class BancoApp:
             else:
                 messagebox.showerror("Erro", "Senha incorreta.")
         else:
-            messagebox.showerror("Erro", "Login não encontrado.")
+            messagebox.showerror("Erro", "Login não encontrado. Tente novamente!")
 
 
     def tela_criar_conta(self):
@@ -173,17 +197,17 @@ class BancoApp:
             saldo = conta.atualizar_saldo_apos_login(titular_nome)
 
             if saldo is not None:
-                ttk.Label(frame, text=f"Bem-vindo(a), {titular_nome}!", font=("Helvetica", 14)).pack(pady=10)
-                ttk.Label(frame, text=f"Saldo: R$ {saldo:.2f}").pack(pady=5)
+                ctk.CTkLabel(frame, text=f"Olá, {titular_nome}!", font=("Helvetica", 16), bg_color="green").pack(pady=10)
+                ctk.CTkLabel(frame, text=f"Saldo: R$ {saldo:.2f}\n", font=("Helvetica", 16), bg_color="green").pack(pady=5)
             else:
-                ttk.Label(frame, text="Erro ao carregar saldo.").pack(pady=5)
+                ctk.CTkLabel(frame, text="Erro ao carregar saldo.").pack(pady=5)
 
-            ttk.Button(frame, text="Depositar", command=lambda: self.tela_depositar(conta)).pack(pady=5)
-            ttk.Button(frame, text="Transferir", command=lambda: self.tela_transferir(conta)).pack(pady=5)
-            ttk.Button(frame, text="Histórico", command=lambda: self.tela_historico(conta)).pack(pady=5)
-            ttk.Button(frame, text="Ver Chaves PIX", command=lambda: self.tela_chaves_pix(conta)).pack(pady=5)
-            ttk.Button(frame, text="Cadastrar Chave PIX", command=lambda: self.cadastrar_chave_pix_tela(conta)).pack(pady=5)
-            ttk.Button(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
+            ctk.CTkButton(frame, text="Depositar", command=lambda: self.tela_depositar(conta)).pack(pady=5)
+            ctk.CTkButton(frame, text="Transferir", command=lambda: self.tela_transferir(conta)).pack(pady=5)
+            ctk.CTkButton(frame, text="Histórico", command=lambda: self.tela_historico(conta)).pack(pady=5)
+            ctk.CTkButton(frame, text="Ver Chaves PIX", command=lambda: self.tela_chaves_pix(conta)).pack(pady=5)
+            ctk.CTkButton(frame, text="Cadastrar Chave PIX", command=lambda: self.cadastrar_chave_pix_tela(conta)).pack(pady=5)
+            ctk.CTkButton(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
 
     def cadastrar_chave_pix_tela(self, conta: Conta):
         """
@@ -319,7 +343,7 @@ class BancoApp:
             self.root.update()
             messagebox.showinfo("Código PIX", "Código copiado para a área de transferência.")
 
-        ttk.Button(frame, text="Copiar Código PIX", command=copiar_pix).pack(pady=5)
+        ttk.Button(frame, text="Copiar Código de confirmação", command=copiar_pix).pack(pady=5)
         ttk.Button(frame, text="Continuar Depósito", command=lambda: self.tela_validar_pix(conta)).pack(pady=5)
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
 
@@ -331,7 +355,7 @@ class BancoApp:
         frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
         frame.pack(expand=True)
 
-        ttk.Label(frame, text="Insira o Código PIX para validar o depósito:", font=("Helvetica", 12)).pack(pady=10)
+        ttk.Label(frame, text="Insira o Código de confirmação!", font=("Helvetica", 12)).pack(pady=10)
         pix_entry = ttk.Entry(frame)
         pix_entry.pack(pady=5)
 
