@@ -308,8 +308,8 @@ class BancoApp:
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
 
 
-    def tela_historico(self, conta):
-        """Exibe o histórico de transações da conta."""
+    def tela_historico(self, conta : Conta):
+        """Exibe o histórico de transações usando o nome do titular."""
         for widget in self.root.winfo_children():
             widget.destroy()
 
@@ -318,16 +318,18 @@ class BancoApp:
 
         ttk.Label(frame, text="Histórico de Transações", font=("Helvetica", 16)).pack(pady=10)
 
-        # Obter o histórico de transações da conta
-        historico = conta.consultar_historico()  # Método que lê transações do arquivo transacoes.csv
+        nome_titular = conta.titular.nome
+        # Obter o histórico de transações usando o nome do titular
+        historico = conta.consultar_historico_por_nome(nome_titular)
         
-        if not historico:
-            ttk.Label(frame, text="Nenhuma transação encontrada.").pack(pady=5)
+        if isinstance(historico, str):  # Mensagem de erro ou falta de transações
+            ttk.Label(frame, text=historico).pack(pady=5)
         else:
             for transacao in historico:
                 ttk.Label(frame, text=", ".join(transacao)).pack(anchor="w", pady=2)
 
-        ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=10)
+        ttk.Button(frame, text="Voltar", command=self.tela_principal).pack(pady=10)
+
     def tela_transferir(self, conta):
         for widget in self.root.winfo_children():
             widget.destroy()

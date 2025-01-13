@@ -191,11 +191,35 @@ class Conta(ContaInterface):
         # Escreve a transação no arquivo correspondente
         escrever_arquivo(nome_arquivo, transacao)
 
+    def consultar_historico_por_nome(self, nome_titular: str):
+        """Consulta o histórico de transações usando o nome do titular."""
+        
+        # Passo 1: Obter o CPF associado ao nome do titular
+        titulares = pegar_linhas_do_arquivo("titulares.csv")
+        cpf = None
+        for titular in titulares:
+            if titular[0] == nome_titular:  # Nome do titular está na primeira coluna
+                cpf = titular[2]  # CPF está na terceira coluna
+                break
+        if not cpf:
+            return f"Titular '{nome_titular}' não encontrado."
 
-    def consultar_historico(self):
+        # Passo 2: Obter o número da conta associado ao CPF
+        contas = pegar_linhas_do_arquivo("contas.csv")
+        numero_conta = None
+        for conta in contas:
+            if conta[1] == cpf:  # CPF está na segunda coluna
+                numero_conta = conta[0]  # Número da conta está na primeira coluna
+                break
+        if not numero_conta:
+            return f"Conta associada ao CPF '{cpf}' não encontrada."
+
+        # Passo 3: Obter o histórico de transações usando o número da conta
         transacoes = pegar_linhas_do_arquivo("transacoes.csv")
-        historico = [t for t in transacoes if t[0] == str(self.numero_conta)]
-        return historico
+        historico = [t for t in transacoes if t[0] == numero_conta]
+
+        return historico if historico else f"Nenhuma transação encontrada para a conta '{numero_conta}'."
+
 
 
     def cadastrar_chave_pix(self, chave: str, tipo: str, numero_conta: str):

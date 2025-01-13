@@ -31,8 +31,8 @@ class ContaInterface(ABC):
         pass
 
     @abstractmethod
-    def consultar_historico(self):
-        """Consulta o histórico de transações da conta."""
+    def consultar_historico_por_nome(self, nome_titular: str):
+        """Consulta o histórico de transações usando o nome do titular."""
         pass
 
     @abstractmethod
