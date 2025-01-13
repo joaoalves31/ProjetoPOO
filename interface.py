@@ -22,6 +22,20 @@ class BancoApp:
 
         ctk.set_appearance_mode("Dark")  
         ctk.set_default_color_theme("green")
+
+        self.tela_boas_vindas()
+
+    def tela_boas_vindas(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=15)
+        frame.pack(expand=True, padx=25, pady=25)
+
+        ctk.CTkLabel(frame, text="Bem-vindo ao Seu Banco!", font=("Roboto", 16, "bold"), text_color="#34495e").pack(pady=25)
+        ctk.CTkLabel(frame, text="Faça login ou crie uma conta para começar.", font=("Roboto", 12), text_color="#34495e").pack(pady=10)
+        ctk.CTkButton(frame, text="Login", command=self.tela_login).pack(pady=10)
+        ctk.CTkButton(frame, text="Criar Conta", command=self.tela_criar_conta).pack(pady=5)
         
         style = ttk.Style()
         style.theme_use("clam")
@@ -29,47 +43,32 @@ class BancoApp:
         style.configure("TButton", font=("Roboto", 10, "bold"), padding=10)
         style.map("TButton")
 
-        self.tela_login()
-
     def tela_login(self):
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
-        frame.pack(expand=True)
+        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=20, padx=20, pady=20)
+        frame.pack(expand=True, padx=30, pady=30)
 
-        # Login Label
-        login_label = ctk.CTkLabel(
-            master=frame,
+        ctk.CTkLabel(
+            frame,
             text="Bem-vindo ao Seu Banco!",
-            font=("Roboto", 17, "bold"),
-            text_color="Green",
-        )
-        login_label.pack(pady=20)
+            font=("Roboto", 18, "bold"),
+            text_color="#1abc9c",
+        ).pack(pady=20)
 
-        # Username Label and Entry
-        username_label = ctk.CTkLabel(master=frame, text="Login:", text_color="Green", font=("Roboto", 12, "bold"))
-        username_label.pack()
-        self.login_entry = ctk.CTkEntry(master=frame, width=200, font=("Roboto", 12))
-        self.login_entry.pack(pady=5)
+        ctk.CTkLabel(frame, text="Login:", text_color="#1abc9c", font=("Roboto", 14, "bold")).pack(pady=5)
+        self.login_entry = ctk.CTkEntry(frame, width=250, font=("Roboto", 12))
+        self.login_entry.pack(pady=10)
 
-        # Password Label and Entry
-        password_label = ctk.CTkLabel(master=frame, text="Senha:", text_color="Green", font=("Roboto", 12, "bold"))
-        password_label.pack()
-        self.senha_entry = ctk.CTkEntry(master=frame, width=200, show="*", font=("Roboto", 12))
-        self.senha_entry.pack(pady=5)
+        ctk.CTkLabel(frame, text="Senha:", text_color="#1abc9c", font=("Roboto", 14, "bold")).pack(pady=5)
+        self.senha_entry = ctk.CTkEntry(frame, width=250, show="*", font=("Roboto", 12))
+        self.senha_entry.pack(pady=10)
 
-        # Login and Create Account Buttons
-        login_button = ctk.CTkButton(
-            master=frame, text="Entrar", command=self.verificar_login
-        )
-        login_button.pack(pady=10)
-        create_account_button = ctk.CTkButton(
-            master=frame, text="Criar Conta", command=self.tela_criar_conta
-        )
-        create_account_button.pack()
+        ctk.CTkButton(
+            frame, text="Entrar", command=self.verificar_login, width=200, height=40
+        ).pack(pady=20)
 
-        # Bind Enter key to login function
         self.root.bind("<Return>", lambda event: self.verificar_login())
 
     def verificar_login(self):
@@ -143,43 +142,43 @@ class BancoApp:
         ttk.Button(frame, text="Voltar", command=self.tela_login).grid(row=8, columnspan=2, pady=5)
 
     def criar_conta(self):
-        nome = self.nome_entry.get().strip()
-        idade = self.idade_entry.get().strip()
-        cpf = self.cpf_entry.get().strip()
-        login = self.novo_login_entry.get().strip()
-        senha = self.nova_senha_entry.get().strip()
-        tipo = self.tipo_conta_var.get()
+        if not hasattr(self, 'tipo_conta_var'):
+            self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
 
-        if not validar_cpf(cpf):
-            messagebox.showerror("Erro", "CPF Inválido")
-            return
-        
-        if cpf_existe(cpf, "contas.csv"):
-            messagebox.showerror("Erro", "CPF já cadastrado.")
-            return
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-        if not nome.isalpha():
-            messagebox.showerror("Erro", "O nome deve conter apenas letras.")
-            return
+        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=20, padx=20, pady=20)
+        frame.pack(expand=True, padx=30, pady=30)
 
-        if not idade.isdigit() or not (18 <= int(idade) <= 100):
-            messagebox.showerror("Erro", "Idade inválida.")
-            return
+        ctk.CTkLabel(frame, text="Criação de Conta", font=("Roboto", 18, "bold"), text_color="#2c3e50").pack(pady=20)
 
-        if not cpf or not login or not senha:
-            messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
-            return
-        
-        # Criação do objeto Titular
-        titular = Titular(nome, idade, cpf, login, senha)
-        #conta = Conta(titular, tipo, saldo = 0)
-    
-        mensagem = self.banco.adicionar_conta(titular, tipo)
-        if mensagem == "Conta criada com sucesso!":
-            messagebox.showinfo("Sucesso", mensagem)
-            self.tela_login()
-        else:
-            messagebox.showerror("Erro", mensagem)
+        ctk.CTkLabel(frame, text="Nome:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
+        self.nome_entry = ctk.CTkEntry(frame, width=250)
+        self.nome_entry.pack(pady=5)
+
+        ctk.CTkLabel(frame, text="Idade:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
+        self.idade_entry = ctk.CTkEntry(frame, width=250)
+        self.idade_entry.pack(pady=5)
+
+        ctk.CTkLabel(frame, text="CPF:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
+        self.cpf_entry = ctk.CTkEntry(frame, width=250)
+        self.cpf_entry.pack(pady=5)
+
+        ctk.CTkLabel(frame, text="Login:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
+        self.novo_login_entry = ctk.CTkEntry(frame, width=250)
+        self.novo_login_entry.pack(pady=5)
+
+        ctk.CTkLabel(frame, text="Senha:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
+        self.nova_senha_entry = ctk.CTkEntry(frame, width=250, show="*")
+        self.nova_senha_entry.pack(pady=5)
+
+        ctk.CTkLabel(frame, text="Tipo de Conta:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=10)
+        tk.Radiobutton(frame, text="Corrente", variable=self.tipo_conta_var, value="ContaCorrente", bg="#ffffff", font=("Roboto", 12)).pack(anchor="w")
+        tk.Radiobutton(frame, text="Poupança", variable=self.tipo_conta_var, value="ContaPoupanca", bg="#ffffff", font=("Roboto", 12)).pack(anchor="w")
+
+        ctk.CTkButton(frame, text="Criar", command=self.criar_conta, width=200, height=40).pack(pady=20)
+        ctk.CTkButton(frame, text="Voltar", command=self.tela_login, width=200, height=40).pack(pady=10)
 
     def tela_principal(self, conta: Conta):
             if conta is None:
@@ -255,7 +254,7 @@ class BancoApp:
             # Retorna para a tela de login
             for widget in self.root.winfo_children():
                 widget.destroy()
-            self.tela_login()  # Volta à tela de login
+            self.tela_boas_vindas()  # Volta à tela de login
 
     def obter_chaves_pix(cpf_ou_email):
         chaves_pix = []
