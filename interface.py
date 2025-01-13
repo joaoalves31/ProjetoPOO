@@ -206,8 +206,9 @@ class BancoApp:
                 sucesso = conta.cadastrar_chave_pix(chave, tipo, numero_conta)
                 if sucesso:
                     messagebox.showinfo("Sucesso", "Chave PIX cadastrada com sucesso!")
+                    cadastro_window.destroy()  # Fecha a janela após o cadastro bem-sucedido
                 else:
-                    messagebox.showerror("Erro", "Falha ao cadastrar chave PIX.")
+                    messagebox.showwarning("Erro", "Chave PIX já cadastrada.")
             else:
                 messagebox.showerror("Erro", "Todos os campos precisam ser preenchidos.")
 
@@ -232,15 +233,28 @@ class BancoApp:
                 widget.destroy()
             self.tela_login()  # Volta à tela de login
 
-    def tela_chaves_pix(self, conta):
-        # Criação da nova janela
-        nova_janela = tk.Toplevel(self.master)
-        nova_janela.title("Chaves Pix Cadastradas")
-        nova_janela.geometry("400x300")
+    def obter_chaves_pix(cpf_ou_email):
+        chaves_pix = []
+        with open("pix_registros.csv", newline='') as arquivo_csv:
+            leitor = csv.reader(arquivo_csv)
+            for linha in leitor:
+                chave, tipo, conta_associada = linha
+                if tipo == "E-mail" and chave == cpf_ou_email:
+                    chaves_pix.append(conta_associada)  # Adiciona o número da conta associado ao E-mail
+                elif tipo == "CPF" and chave == cpf_ou_email:
+                    chaves_pix.append(conta_associada)  # Adiciona o número da conta associado ao CPF
+        return chaves_pix        
 
-        # Criar label de conta
-        label_conta = tk.Label(nova_janela, text=f"Chaves Pix para Conta: {conta['numero_conta']}")
-        label_conta.pack(pady=10)
+    def tela_chaves_pix(self):
+        # Verifica se o master existe antes de criar uma nova janela
+        if hasattr(self, 'master'):
+            nova_janela = tk.Toplevel(self.master)
+            nova_janela.title("Chaves PIX")
+            nova_janela.geometry("400x300")
+            # Adicione o conteúdo para a nova janela aqui, como um texto ou lista de chaves.
+            ttk.Label(nova_janela, text="Aqui você pode visualizar suas chaves PIX.").pack()
+        else:
+            print("Erro: master não foi definido corretamente.")
 
         # Criar a lista de chaves Pix
         if conta["chaves_pix"]:
