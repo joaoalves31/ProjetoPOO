@@ -1,6 +1,6 @@
 from titular import Titular 
 from conta_interface import ContaInterface
-from gerencia_banco_dados import filtro, escrever_arquivo, pegar_linhas_do_arquivo
+from gerencia_banco_dados import filtro, escrever_arquivo, pegar_linhas_do_arquivo, buscar_conta_por_cpf, buscar_numero_conta_por_cpf
 import csv
 import re
 import uuid
@@ -15,6 +15,7 @@ class Conta(ContaInterface):
         Conta.proximo_numero_conta += 1
         self.__saldo = saldo if saldo is not None else 0.0
         self.__titular = titular 
+        self.pix_pendentes = {}
     @property
     def saldo(self):
         return self.__saldo 
@@ -44,8 +45,12 @@ class Conta(ContaInterface):
         # Atualiza o saldo no arquivo de contas
         self.atualizar_saldo()
         
+        nome_titular = self.titular.cpf 
+        # Passo 1: Obter o número da conta associado ao CPF
+        numero_conta = buscar_conta_por_cpf(nome_titular)
+
         # Registra a transação
-        self.registrar_transacao("Depósito", valor)
+        self.registrar_transacao("Depósito", valor, numero_conta)
 
     def concluir_pix_deposito(self, chave_pix: str) -> float:
         """Valida o PIX e conclui o depósito."""
@@ -101,15 +106,23 @@ class Conta(ContaInterface):
         return True
 
     def atualizar_saldo(self):
+        # Obtém o número da conta com base no CPF
+        cpf_titular = self.titular.cpf  # Supondo que o CPF está armazenado na instância do titular
+        numero_conta = buscar_numero_conta_por_cpf(cpf_titular)
+
+        if numero_conta is None:
+            print(f"Conta não encontrada para o CPF: {cpf_titular}")
+            return
+
         # Lê todas as linhas do arquivo
         linhas = pegar_linhas_do_arquivo("contas.csv")
 
         for i, linha in enumerate(linhas):
-            if linha[0] == str(self.numero_conta):  # Verifica o número da conta
+            if linha[0] == str(numero_conta):  # Verifica o número da conta
                 linha[2] = f"{self.__saldo:.2f}"  # Atualiza o saldo no formato string
                 break
         else:
-            print(f"Conta {self.numero_conta} não encontrada no arquivo.")
+            print(f"Conta {numero_conta} não encontrada no arquivo.")
 
         # Reescreve todas as linhas no arquivo sem criar novas linhas
         try:
@@ -118,6 +131,7 @@ class Conta(ContaInterface):
                     arquivo.write(','.join(linha) + '\n')  # Escreve as linhas como string CSV
         except Exception as e:
             print(f"Erro ao atualizar o saldo: {e}")
+
 
     def atualizar_saldo_conta_destino(self, conta_dest):
         # Lê todas as linhas do arquivo
@@ -149,23 +163,27 @@ class Conta(ContaInterface):
                     if nome_arquivo.lower() == nome_titular.lower():
                         cpf_titular = cpf_arquivo
                         break
-            
+
             if not cpf_titular:
                 print(f"Titular '{nome_titular}' não encontrado no arquivo de titulares.")
                 return None
 
-            # Passo 2: Procurar o saldo no arquivo de contas usando o CPF
+            # Passo 2: Usar o CPF para buscar o número da conta
+            numero_conta = buscar_numero_conta_por_cpf(cpf_titular)
+
+            if numero_conta is None:
+                print(f"Conta não encontrada para o CPF: {cpf_titular}")
+                return None
+
+            # Passo 3: Procurar o saldo no arquivo de contas usando o número da conta
             with open('contas.csv', 'r') as f_contas:
                 reader = csv.reader(f_contas)
                 for linha in reader:
-                    cpf_conta = linha[1]  # CPF da conta
-                    saldo_conta = float(linha[2])  # Saldo da conta
-
-                    if cpf_conta == cpf_titular:
-                        self.__saldo = saldo_conta  # Atualiza o saldo diretamente
+                    if linha[0] == str(numero_conta):  # Verifica o número da conta
+                        self.__saldo = float(linha[2])  # Atualiza o saldo diretamente
                         return self.saldo  # Use o getter
 
-            print(f"Conta com CPF '{cpf_titular}' não encontrada no arquivo de contas.")
+            print(f"Conta com número '{numero_conta}' não encontrada no arquivo de contas.")
             return None
 
         except FileNotFoundError as e:
@@ -175,19 +193,17 @@ class Conta(ContaInterface):
             print(f"Erro ao atualizar saldo: {e}")
             return None
 
+    # Passando explicitamente o número da conta ao registrar a transação
     def registrar_transacao(self, descricao: str, valor: float = 0.1, conta_destino: int = None): 
+        
         # Nomeia o arquivo de transações de forma global
         nome_arquivo = "transacoes.csv"  # Um único arquivo para todas as transações
-
-        # Se nenhuma conta destino for informada, considera a própria conta
-        if conta_destino is None:
-            conta_destino = self.numero_conta
 
         # Obtém a data e hora atual
         data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Cria a transação com a data e hora
-        transacao = [str(self.numero_conta), descricao, f"R$ {valor:.2f}", data_hora]
+        transacao = [str(conta_destino), descricao, f"R$ {valor:.2f}", data_hora]
 
         # Escreve a transação no arquivo correspondente
         escrever_arquivo(nome_arquivo, transacao)
@@ -221,51 +237,7 @@ class Conta(ContaInterface):
         historico = [t for t in transacoes if t[0] == numero_conta]
 
         return historico if historico else f"Nenhuma transação encontrada para a conta '{numero_conta}'."
-
-    '''def consultar_historico(self):
-        historico = []
-        
-        try:
-            with open('transacoes.csv', 'r') as arquivo:
-                for linha in arquivo:
-                    # Ignora linhas em branco
-                    if not linha.strip():
-                        continue
-                    
-                    dados = linha.strip().split(',')
-                    
-                    # Ignora transações mal formatadas (não tem 4 campos)
-                    if len(dados) != 4:
-                        print(f"Formato inválido na linha (ignorando): {linha.strip()}")
-                        continue
-                    
-                    numero_conta, transacao, valor, data = dados
-                    
-                    # Verifica se a conta corresponde
-                    if numero_conta == str(self.numero_conta):
-                        # Ignora transações que tenham referências a objetos Titular
-                        if '<titular.Titular object at' in transacao:
-                            print(f"Transação com objeto Titular ignorada: {transacao}")
-                            continue
-                        
-                        # Tenta garantir que o valor da transação seja um número válido
-                        try:
-                            valor_float = float(valor.replace('R$', '').replace(' ', '').replace(',', '.'))
-                        except ValueError:
-                            print(f"Valor inválido na transação (ignorando): {valor}")
-                            continue
-                        
-                        # Adiciona a transação válida ao histórico
-                        historico.append((transacao, f"R$ {valor_float:.2f}", data))
-                        
-        except FileNotFoundError as e:
-            print(f"Erro ao acessar o arquivo de transações: {e}")
-        except Exception as e:
-            print(f"Erro inesperado: {e}")
-        
-        return historico'''
     
-   
     def cadastrar_chave_pix(self, chave: str, tipo: str, numero_conta: str):
         nome_arquivo = "pix_registros.csv"
         linhas = pegar_linhas_do_arquivo(nome_arquivo)
@@ -319,6 +291,7 @@ class Conta(ContaInterface):
         except FileNotFoundError:
             pass  # Se o arquivo não for encontrado, retorna lista vazia
         return chaves    
+   
 
     def validar_email(self, email: str) -> bool:
             # Expressão regular para validar o e-mail
@@ -329,3 +302,4 @@ class Conta(ContaInterface):
             # Expressão regular para validar o número de telefone (formato simples)
             telefone_regex = r'^\(\d{2}\)\s\d{4,5}-\d{4}$'
             return bool(re.match(telefone_regex, telefone))
+    

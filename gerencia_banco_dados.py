@@ -77,3 +77,36 @@ def ler_arquivo(nome_arquivo: str) -> List[List[str]]:
     except FileNotFoundError:
         print(f"Arquivo {nome_arquivo} não encontrado.")
     return linhas
+
+
+
+def buscar_conta_por_cpf(cpf: str) -> int:
+        """
+        Busca o número da conta no arquivo contas.csv com base no CPF.
+        
+        :param cpf: O CPF do titular.
+        :return: Número da conta associado ao CPF, ou None se não encontrado.
+        """
+        with open('contas.csv', mode='r', encoding='utf-8') as file_contas:
+            reader = csv.reader(file_contas)
+            for row in reader:
+                if row[1] == cpf:  # O CPF está na segunda coluna (índice 1)
+                    return int(row[0])  # Retorna o número da conta (primeira coluna)
+        return None  # Retorna None caso o CPF não seja encontrado no arquivo contas
+    
+
+def buscar_numero_conta_por_cpf(cpf: str) -> int:
+        """
+        Busca o número da conta de um titular baseado no CPF.
+        
+        :param cpf: O CPF do titular.
+        :return: Número da conta associado ao CPF, ou None se não encontrado.
+        """
+        # Primeiro, verifica se o CPF está no arquivo titulares.csv
+        with open('titulares.csv', mode='r', encoding='utf-8') as file_titulares:
+            reader = csv.reader(file_titulares)
+            for row in reader:
+                if row[2] == cpf:  # O CPF está na terceira coluna (índice 2)
+                    # Se encontrou o CPF, busca o número da conta no arquivo contas.csv
+                    return buscar_conta_por_cpf(cpf)
+        return None  # Retorna None caso o CPF não seja encontrado no arquivo titulares
