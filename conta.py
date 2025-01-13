@@ -249,21 +249,21 @@ class Conta(ContaInterface):
         # Verifica se a chave já está cadastrada
         for linha in linhas:
             if linha[0] == chave:
-                print("Chave PIX já cadastrada!")
+                print(f"Chave PIX já cadastrada! Chave: {chave}")
                 return False
 
         # Valida a chave de acordo com o tipo
         if tipo == "CPF":
             if not validar_cpf(chave):  # Agora usa a função importada
-                print("CPF inválido!")
+                print(f"CPF inválido! Chave fornecida: {chave}")
                 return False
         elif tipo == "E-mail":
             if not self.validar_email(chave):
-                print("E-mail inválido!")
+                print(f"E-mail inválido! Chave fornecida: {chave}")
                 return False
         elif tipo == "Telefone":
             if not self.validar_telefone(chave):
-                print("Número de telefone inválido!")
+                print(f"Número de telefone inválido! Chave fornecida: {chave}")
                 return False
         else:
             print("Tipo de chave PIX inválido!")
@@ -273,6 +273,7 @@ class Conta(ContaInterface):
         dados = [chave, tipo, numero_conta]
         escrever_arquivo(nome_arquivo, dados)  # Função já existente para adicionar ao arquivo
 
+        print(f"Chave PIX cadastrada com sucesso: {dados}")  # Mensagem de sucesso
         return True
         
         # Funções auxiliares para validação
@@ -299,7 +300,8 @@ class Conta(ContaInterface):
             return bool(re.match(email_regex, email))
 
     def validar_telefone(self, telefone: str) -> bool:
-            # Expressão regular para validar o número de telefone (formato simples)
-            telefone_regex = r'^\(\d{2}\)\s\d{4,5}-\d{4}$'
-            return bool(re.match(telefone_regex, telefone))
+        # Expressão regular para validar o número de telefone com ou sem formatação
+        telefone_regex = r'^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$'
+        return bool(re.match(telefone_regex, telefone))
+
     
