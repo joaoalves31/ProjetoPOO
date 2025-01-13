@@ -80,17 +80,17 @@ class ContaInterface(ABC):
         """Valida o PIX e conclui o depósito."""
         pass
         
- @abstractmethod
-    def buscar_chaves_pix(,self numero_conta:int) -> void
-      """Busca Chaves Pix."""
-        pass
+    @abstractmethod
+    def buscar_chaves_pix(self, numero_conta:int) -> None:
+        """Busca Chaves Pix."""
+    pass
 
- @abstractmethod
-    def validar_email(self, email: str) -> bool
+    @abstractmethod
+    def validar_email(self, email: str) -> bool:
       """Valida Email do Pix."""
-        pass
+    pass
 
- @abstractmethod
-    def validar_telefone(self, telefone: str) -> bool
+    @abstractmethod
+    def validar_telefone(self, telefone: str) -> bool:
       """Valida Telefone do Pix."""
-        pass
+    pass
