@@ -29,29 +29,27 @@ class BancoApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        outer_frame = ctk.CTkFrame(self.root, fg_color="#2980b9", corner_radius=20)
-        outer_frame.pack(expand=True, padx=30, pady=30)
+        # Ajuste da borda azul para mais minimalismo
+        outer_frame = ctk.CTkFrame(self.root, fg_color="#2980b9", corner_radius=10)
+        outer_frame.pack(expand=True, padx=40, pady=40)  # Aumentando o padding para afastar mais da borda azul
 
-        frame = ctk.CTkFrame(outer_frame, fg_color="#ffffff", corner_radius=15)
-        frame.pack(expand=True, padx=5, pady=5)
-
-        logo_img = Image.open("e:/win/minimalist logo for BancoDigital (1).png") 
-        logo_img = logo_img.resize((150, 150))  
-        logo_img_ctk = ctk.CTkImage(logo_img)
+        # Ajuste do frame interior com mais espaçamento
+        frame = ctk.CTkFrame(outer_frame, fg_color="#ffffff", corner_radius=10)
+        frame.pack(expand=True, padx=4, pady=4)  # Ajustando o padding do frame interior
 
         ctk.CTkLabel(
             frame, 
             text="Bem-vindo ao Seu Banco!", 
             font=("Roboto", 20, "bold"), 
             text_color="#2c3e50"
-        ).pack(pady=25)
+        ).pack(pady=20, padx=10)
 
         ctk.CTkLabel(
             frame, 
             text="Gerencie suas finanças de forma segura e prática.", 
             font=("Roboto", 14), 
             text_color="#7f8c8d"
-        ).pack(pady=10)
+        ).pack(pady=20 , padx=1)  
 
         ctk.CTkButton(
             frame, 
