@@ -21,5 +21,7 @@
 670,Depósito,R$ 100.00,2025-01-12 22:12:50
 670,Depósito,R$ 100.00,2025-01-13 13:59:55
 670,Depósito,R$ 10.00,2025-01-13 21:08:38
-None,Transferência de R$ 10.00 para 13911646607,R$ 10.00,2025-01-13 21:09:42
-None,Recebimento de R$ 10.00 da conta de <titular.Titular object at 0x0000021C7CC6F4D0>,R$ 10.00,2025-01-13 21:09:42
+668,Transferência de R$ 10.00 para 02200858620,R$ 10.00,2025-01-13 22:36:14
+666,Recebimento de R$ 10.00 da conta de 668,R$ 10.00,2025-01-13 22:36:14
+670,Transferência de R$ 1000.00 para 02200858620,R$ 1000.00,2025-01-13 22:38:09
+666,Recebimento de R$ 1000.00 da conta 670,R$ 1000.00,2025-01-13 22:38:09

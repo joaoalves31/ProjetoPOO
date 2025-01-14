@@ -270,6 +270,11 @@ class Conta(ContaInterface):
             return False
 
         # Adiciona a chave, tipo e conta ao arquivo
+
+        nome_titular = self.titular.cpf 
+        # Passo 1: Obter o número da conta associado ao CPF
+        numero_conta = buscar_conta_por_cpf(nome_titular)
+
         dados = [chave, tipo, numero_conta]
         escrever_arquivo(nome_arquivo, dados)  # Função já existente para adicionar ao arquivo
 

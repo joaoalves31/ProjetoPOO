@@ -6,7 +6,7 @@ from pessoa import Pessoa
 from titular import Titular
 from conta_corrente import ContaCorrente
 from conta_poupanca import ContaPoupanca
-from gerencia_banco_dados import filtro
+from gerencia_banco_dados import filtro, buscar_conta_por_cpf
 from cpf_verificacao import validar_cpf, cpf_existe
 from tkinter import ttk, messagebox
 from PIL import Image
@@ -414,7 +414,10 @@ class BancoApp:
             return
 
         # Criar a lista de chaves Pix
-        chaves_pix = conta.buscar_chaves_pix(conta.numero_conta)  # Obter as chaves Pix dessa conta
+        nome_titular = conta.titular.cpf 
+        # Passo 1: Obter o número da conta associado ao CPF
+        numero_conta = buscar_conta_por_cpf(nome_titular)
+        chaves_pix = conta.buscar_chaves_pix(numero_conta)  # Obter as chaves Pix dessa conta
 
         if chaves_pix:
             listbox = tk.Listbox(nova_janela)
@@ -562,8 +565,15 @@ class BancoApp:
                     if not conta.transferir(valor, conta_destinatario):
                         raise ValueError("Saldo e limite insuficientes.")
 
-                conta.registrar_transacao(f"Transferência de R$ {valor:.2f} para {pix_destinatario}", valor)
-                conta_destinatario.registrar_transacao(f"Recebimento de R$ {valor:.2f} da conta de {conta.titular}", valor)
+                 # Passo 1: Obter o número da conta associado ao CPF do titular
+                numero_conta_remetente = buscar_conta_por_cpf(conta.titular.cpf)
+                numero_conta_destinatario = buscar_conta_por_cpf(conta_destinatario.titular.cpf)
+                
+                if not numero_conta_remetente or not numero_conta_destinatario:
+                    raise ValueError("Número da conta não encontrado.")
+
+                conta.registrar_transacao(f"Transferência de R$ {valor:.2f} para {pix_destinatario}", valor, numero_conta_remetente)
+                conta_destinatario.registrar_transacao(f"Recebimento de R$ {valor:.2f} da conta {numero_conta_remetente}", valor, numero_conta_destinatario)
 
                 messagebox.showinfo("Sucesso", f"Transferência de R$ {valor:.2f} para {pix_destinatario} realizada com sucesso!")
                 self.tela_principal(conta)
