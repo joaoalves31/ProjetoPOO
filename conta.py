@@ -285,13 +285,15 @@ class Conta(ContaInterface):
             with open("pix_registros.csv", mode="r") as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    if row[0] == numero_conta:  # Número da conta corresponde à linha
+                    print(f"Lendo linha: {row}")  # Depuração
+                    if row[2] == str(numero_conta):  # Verifique se a comparação é com a terceira coluna
                         tipo_chave = row[1]
-                        chave = row[2]
+                        chave = row[0]
                         chaves.append((chave, tipo_chave))
         except FileNotFoundError:
+            print("Arquivo pix_registros.csv não encontrado.")
             pass  # Se o arquivo não for encontrado, retorna lista vazia
-        return chaves    
+        return chaves 
    
 
     def validar_email(self, email: str) -> bool:
