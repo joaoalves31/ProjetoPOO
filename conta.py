@@ -138,7 +138,7 @@ class Conta(ContaInterface):
         linhas = pegar_linhas_do_arquivo("contas.csv")
         
         for i, linha in enumerate(linhas):
-            if linha[0] == str(conta_dest[0]):  # Verifica o número da conta
+            if linha[0] == str(conta_dest):  # Verifica o número da conta
                 linhas[i] = conta_dest  # Atualiza a linha com a nova conta
                 break
         

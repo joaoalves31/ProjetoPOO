@@ -4,7 +4,7 @@ from gerencia_banco_dados import filtro, escrever_arquivo, pegar_linhas_do_arqui
 import csv
 
 class ContaCorrente(Conta):
-    def __init__(self, titular, tipo = 'ContaCorrente', saldo = 0.0, limite=0.0):
+    def __init__(self, titular, tipo = 'ContaCorrente', saldo = 0.0, limite=200.0):
         super().__init__(titular, tipo, saldo)  # Chama o init da classe pai (Conta)
         self.__limite = limite
 

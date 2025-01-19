@@ -84,7 +84,7 @@ def buscar_conta_por_cpf(cpf: str) -> int:
         """
         Busca o número da conta no arquivo contas.csv com base no CPF.
         
-        :param cpf: O CPF do titular.
+        :parametro cpf: O CPF do titular.
         :return: Número da conta associado ao CPF, ou None se não encontrado.
         """
         with open('contas.csv', mode='r', encoding='utf-8') as file_contas:
@@ -110,3 +110,18 @@ def buscar_numero_conta_por_cpf(cpf: str) -> int:
                     # Se encontrou o CPF, busca o número da conta no arquivo contas.csv
                     return buscar_conta_por_cpf(cpf)
         return None  # Retorna None caso o CPF não seja encontrado no arquivo titulares
+
+
+def buscar_limite_por_cpf(cpf: str) -> float:
+    """
+    Busca o limite de crédito de um titular com base no CPF no arquivo contas.csv.
+    
+    :param cpf: O CPF do titular.
+    :return: Limite associado ao CPF, ou 0.0 se não encontrado.
+    """
+    with open('contas.csv', mode='r', encoding='utf-8') as file_contas:
+        reader = csv.reader(file_contas)
+        for row in reader:
+            if row[1] == cpf:  # O CPF está na segunda coluna
+                return float(row[3])  # O limite é a última coluna
+    return 0.0

@@ -1,12 +1,13 @@
 import tkinter as tk
 import customtkinter as ctk
+import csv
 from banco import Banco
 from conta import Conta
 from pessoa import Pessoa
 from titular import Titular
 from conta_corrente import ContaCorrente
 from conta_poupanca import ContaPoupanca
-from gerencia_banco_dados import filtro, buscar_conta_por_cpf
+from gerencia_banco_dados import filtro, buscar_conta_por_cpf, buscar_limite_por_cpf
 from cpf_verificacao import validar_cpf, cpf_existe
 from tkinter import ttk, messagebox
 from PIL import Image
@@ -333,6 +334,10 @@ class BancoApp:
             if saldo is not None:
                 ctk.CTkLabel(frame, text=f"Olá, {titular_nome}!", font=("Roboto", 16), text_color="#2c3e50").pack(pady=10)
                 ctk.CTkLabel(frame, text=f"Saldo: R$ {saldo:.2f}\n", font=("Roboto", 16), text_color="#2c3e50").pack(pady=5)
+                cpf = conta.titular.cpf
+                limite = buscar_limite_por_cpf(cpf)
+                if limite:
+                    ctk.CTkLabel(frame, text=f"Limite: R$ {limite:.2f}\n", font=("Roboto", 16), text_color="#2c3e50").pack(pady=5)
             else:
                 ctk.CTkLabel(frame, text="Erro ao carregar saldo.").pack(pady=5)
 
@@ -588,6 +593,7 @@ class BancoApp:
             ttk.Button(frame, text="Transferir", command=lambda: realizar_transferencia("saldo")).pack(pady=5)
 
         ttk.Button(frame, text="Voltar", command=lambda: self.tela_principal(conta)).pack(pady=5)
+
 
 if __name__ == "__main__":
     # Suponha que os arquivos sejam 'titulares.csv' e 'contas.csv'
