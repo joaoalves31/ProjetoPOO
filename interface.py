@@ -153,9 +153,10 @@ class BancoApp:
             text_color="#34495e"
         ).pack(pady=20)
 
+        # Campo Nome
         ctk.CTkLabel(
             frame, 
-            text="Nome Completo", 
+            text="Nome", 
             text_color="#2980b9", 
             font=("Roboto", 14, "bold")
         ).pack(pady=5)
@@ -167,6 +168,22 @@ class BancoApp:
         )
         self.nome_entry.pack(pady=10)
 
+        # Campo Idade
+        ctk.CTkLabel(
+            frame, 
+            text="Idade", 
+            text_color="#2980b9", 
+            font=("Roboto", 14, "bold")
+        ).pack(pady=5)
+        self.idade_entry = ctk.CTkEntry(
+            frame, 
+            width=250, 
+            font=("Roboto", 12), 
+            placeholder_text="Digite sua idade"
+        )
+        self.idade_entry.pack(pady=10)
+
+        # Campo CPF
         ctk.CTkLabel(
             frame, 
             text="CPF", 
@@ -181,6 +198,22 @@ class BancoApp:
         )
         self.cpf_entry.pack(pady=10)
 
+        # Campo Login
+        ctk.CTkLabel(
+            frame, 
+            text="Login", 
+            text_color="#2980b9", 
+            font=("Roboto", 14, "bold")
+        ).pack(pady=5)
+        self.novo_login_entry = ctk.CTkEntry(
+            frame, 
+            width=250, 
+            font=("Roboto", 12), 
+            placeholder_text="Crie seu login"
+        )
+        self.novo_login_entry.pack(pady=10)
+
+        # Campo Senha
         ctk.CTkLabel(
             frame, 
             text="Senha", 
@@ -196,16 +229,77 @@ class BancoApp:
         )
         self.nova_senha_entry.pack(pady=10)
 
+        # Seletor de Tipo de Conta
+        ctk.CTkLabel(
+            frame, 
+            text="Tipo de Conta", 
+            text_color="#2980b9", 
+            font=("Roboto", 14, "bold")
+        ).pack(pady=5)
+        self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
+        ctk.CTkRadioButton(
+            frame, 
+            text="Conta Corrente", 
+            variable=self.tipo_conta_var, 
+            value="ContaCorrente"
+        ).pack(pady=5)
+        ctk.CTkRadioButton(
+            frame, 
+            text="Poupança", 
+            variable=self.tipo_conta_var, 
+            value="ContaPoupança"
+        ).pack(pady=5)
+
+        # Botão Criar Conta
         ctk.CTkButton(
             frame, 
             text="Criar Conta", 
-            command=self.registrar_conta, 
+            command=self.criar_conta, 
             width=250, 
             height=40, 
             corner_radius=10,
             font=("Roboto", 14)
         ).pack(pady=20)
 
+    def criar_conta(self):
+            nome = self.nome_entry.get().strip()
+            idade = self.idade_entry.get().strip()
+            cpf = self.cpf_entry.get().strip()
+            login = self.novo_login_entry.get().strip()
+            senha = self.nova_senha_entry.get().strip()
+            tipo = self.tipo_conta_var.get()  # Supondo que tipo_conta_var é uma variável StringVar para selecionar tipo
+
+            # Validações
+            if not nome.isalpha():
+                messagebox.showerror("Erro", "O nome deve conter apenas letras.")
+                return
+
+            if not idade.isdigit() or not (18 <= int(idade) <= 100):
+                messagebox.showerror("Erro", "Idade inválida. Deve ser entre 18 e 100 anos.")
+                return
+
+            if not validar_cpf(cpf):  # Função separada para validar CPF
+                messagebox.showerror("Erro", "CPF inválido.")
+                return
+
+            if cpf_existe(cpf, "contas.csv"):  # Função para verificar se CPF já existe no arquivo
+                messagebox.showerror("Erro", "CPF já cadastrado.")
+                return
+
+            if not cpf or not login or not senha:
+                messagebox.showerror("Erro", "Todos os campos são obrigatórios.")
+                return
+
+            # Criação do objeto Titular
+            titular = Titular(nome=nome, idade=int(idade), cpf=cpf, login=login, senha=senha)
+
+            # Adiciona a conta no banco usando o método da classe Banco
+            mensagem = self.banco.adicionar_conta(titular, tipo)
+            if mensagem == "Conta criada com sucesso!":
+                messagebox.showinfo("Sucesso", mensagem)
+                self.tela_login()  # Redireciona para a tela de login
+            else:
+                messagebox.showerror("Erro", mensagem)
 
     def verificar_login(self):
         login = self.login_entry.get().strip()
@@ -239,7 +333,7 @@ class BancoApp:
             messagebox.showerror("Erro", "Login não encontrado. Tente novamente!")
 
 
-    def tela_criar_conta(self):
+    '''def tela_criar_conta(self):
         if not hasattr(self, 'tipo_conta_var'):
             self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
 
@@ -275,46 +369,7 @@ class BancoApp:
         tk.Radiobutton(frame, text="Poupança", variable=self.tipo_conta_var, value="ContaPoupanca", bg="#ecf0f1").grid(row=6, column=1, sticky="w")
 
         ttk.Button(frame, text="Criar", command=self.criar_conta).grid(row=7, columnspan=2, pady=10)
-        ttk.Button(frame, text="Voltar", command=self.tela_login).grid(row=8, columnspan=2, pady=5)
-
-    def criar_conta(self):
-        if not hasattr(self, 'tipo_conta_var'):
-            self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
-
-        for widget in self.root.winfo_children():
-            widget.destroy()
-
-        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=20, padx=20, pady=20)
-        frame.pack(expand=True, padx=30, pady=30)
-
-        ctk.CTkLabel(frame, text="Criação de Conta", font=("Roboto", 18, "bold"), text_color="#2c3e50").pack(pady=20)
-
-        ctk.CTkLabel(frame, text="Nome:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
-        self.nome_entry = ctk.CTkEntry(frame, width=250)
-        self.nome_entry.pack(pady=5)
-
-        ctk.CTkLabel(frame, text="Idade:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
-        self.idade_entry = ctk.CTkEntry(frame, width=250)
-        self.idade_entry.pack(pady=5)
-
-        ctk.CTkLabel(frame, text="CPF:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
-        self.cpf_entry = ctk.CTkEntry(frame, width=250)
-        self.cpf_entry.pack(pady=5)
-
-        ctk.CTkLabel(frame, text="Login:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
-        self.novo_login_entry = ctk.CTkEntry(frame, width=250)
-        self.novo_login_entry.pack(pady=5)
-
-        ctk.CTkLabel(frame, text="Senha:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=5)
-        self.nova_senha_entry = ctk.CTkEntry(frame, width=250, show="*")
-        self.nova_senha_entry.pack(pady=5)
-
-        ctk.CTkLabel(frame, text="Tipo de Conta:", font=("Roboto", 14), text_color="#2c3e50").pack(pady=10)
-        tk.Radiobutton(frame, text="Corrente", variable=self.tipo_conta_var, value="ContaCorrente", bg="#ffffff", font=("Roboto", 12)).pack(anchor="w")
-        tk.Radiobutton(frame, text="Poupança", variable=self.tipo_conta_var, value="ContaPoupanca", bg="#ffffff", font=("Roboto", 12)).pack(anchor="w")
-
-        ctk.CTkButton(frame, text="Criar", command=self.criar_conta, width=200, height=40).pack(pady=20)
-        ctk.CTkButton(frame, text="Voltar", command=self.tela_login, width=200, height=40).pack(pady=10)
+        ttk.Button(frame, text="Voltar", command=self.tela_login).grid(row=8, columnspan=2, pady=5)'''
 
     def tela_principal(self, conta: Conta):
             if conta is None:
