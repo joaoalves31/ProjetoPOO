@@ -132,8 +132,23 @@ class Conta(ContaInterface):
         except Exception as e:
             print(f"Erro ao atualizar o saldo: {e}")
 
+    def atualizar_saldo_conta_destino(self, conta_destino):
+        # Carrega todas as linhas do arquivo "contas.csv"
+        linhas = pegar_linhas_do_arquivo("contas.csv")  # Função que retorna as linhas do arquivo
+        
+        for i, linha in enumerate(linhas):
+            # Verifica se a conta destino corresponde ao ID da conta
+            if linha[0] == conta_destino[0]:  # O primeiro campo é o ID da conta
+                linha[2] = str(conta_destino[2])  # Atualiza o saldo (o saldo está no índice 2)
+                break  # Conta encontrada, atualizada e saída do loop
 
-    def atualizar_saldo_conta_destino(self, conta_dest):
+        # Reabre o arquivo "contas.csv" para sobrescrever com as linhas modificadas
+        with open("contas.csv", 'w', newline='', encoding='utf-8') as arquivo:
+            for linha in linhas:
+                arquivo.write(','.join(linha) + '\n')  # Escreve cada linha novamente no arquivo
+
+
+    '''def atualizar_saldo_conta_destino(self, conta_dest):
         # Lê todas as linhas do arquivo
         linhas = pegar_linhas_do_arquivo("contas.csv")
         
@@ -148,7 +163,7 @@ class Conta(ContaInterface):
                 writer = csv.writer(arquivo)
                 writer.writerows(linhas)
         except Exception as e:
-            print(f"Erro ao atualizar o saldo da conta destino: {e}")
+            print(f"Erro ao atualizar o saldo da conta destino: {e}")'''
 
     def atualizar_saldo_apos_login(self, nome_titular):
         try:
