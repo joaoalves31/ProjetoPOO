@@ -162,7 +162,9 @@ class BancoApp:
         ).pack(pady=5)
         self.nome_entry = ctk.CTkEntry(
             frame, 
-            width=250, 
+            width=250,
+            fg_color="#ffffff", 
+            text_color="#2980b9",  
             font=("Roboto", 12), 
             placeholder_text="Digite seu nome completo"
         )
@@ -177,7 +179,9 @@ class BancoApp:
         ).pack(pady=5)
         self.idade_entry = ctk.CTkEntry(
             frame, 
-            width=250, 
+            width=250,
+            fg_color="#ffffff", 
+            text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Digite sua idade"
         )
@@ -192,7 +196,9 @@ class BancoApp:
         ).pack(pady=5)
         self.cpf_entry = ctk.CTkEntry(
             frame, 
-            width=250, 
+            width=250,
+            fg_color="#ffffff", 
+            text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Digite seu CPF"
         )
@@ -207,7 +213,9 @@ class BancoApp:
         ).pack(pady=5)
         self.novo_login_entry = ctk.CTkEntry(
             frame, 
-            width=250, 
+            width=250,
+            fg_color="#ffffff", 
+            text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Crie seu login"
         )
@@ -222,7 +230,9 @@ class BancoApp:
         ).pack(pady=5)
         self.nova_senha_entry = ctk.CTkEntry(
             frame, 
-            width=250, 
+            width=250,
+            fg_color="#ffffff", 
+            text_color="#2980b9", 
             show="*", 
             font=("Roboto", 12), 
             placeholder_text="Crie uma senha"
@@ -239,13 +249,15 @@ class BancoApp:
         self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
         ctk.CTkRadioButton(
             frame, 
-            text="Conta Corrente", 
+            text="Conta Corrente",
+            text_color="#2980b9", 
             variable=self.tipo_conta_var, 
             value="ContaCorrente"
         ).pack(pady=5)
         ctk.CTkRadioButton(
             frame, 
-            text="Poupança", 
+            text="Poupança",
+            text_color="#2980b9", 
             variable=self.tipo_conta_var, 
             value="ContaPoupança"
         ).pack(pady=5)
@@ -267,7 +279,7 @@ class BancoApp:
             cpf = self.cpf_entry.get().strip()
             login = self.novo_login_entry.get().strip()
             senha = self.nova_senha_entry.get().strip()
-            tipo = self.tipo_conta_var.get()  # Supondo que tipo_conta_var é uma variável StringVar para selecionar tipo
+            tipo = self.tipo_conta_var.get()  
 
             # Validações
             if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$", nome.strip()):
@@ -332,44 +344,6 @@ class BancoApp:
         else:
             messagebox.showerror("Erro", "Login não encontrado. Tente novamente!")
 
-
-    '''def tela_criar_conta(self):
-        if not hasattr(self, 'tipo_conta_var'):
-            self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
-
-        for widget in self.root.winfo_children():
-            widget.destroy()
-
-        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
-        frame.pack(expand=True)
-
-        ttk.Label(frame, text="Nome:").grid(row=0, column=0, sticky="w")
-        self.nome_entry = ttk.Entry(frame)
-        self.nome_entry.grid(row=0, column=1)
-
-        ttk.Label(frame, text="Idade:").grid(row=1, column=0, sticky="w")
-        self.idade_entry = ttk.Entry(frame)
-        self.idade_entry.grid(row=1, column=1)
-
-        ttk.Label(frame, text="CPF:").grid(row=2, column=0, sticky="w")
-        self.cpf_entry = ttk.Entry(frame)
-        self.cpf_entry.grid(row=2, column=1)
-
-        ttk.Label(frame, text="Login:").grid(row=3, column=0, sticky="w")
-        self.novo_login_entry = ttk.Entry(frame)
-        self.novo_login_entry.grid(row=3, column=1)
-
-        ttk.Label(frame, text="Senha:").grid(row=4, column=0, sticky="w")
-        self.nova_senha_entry = ttk.Entry(frame, show="*")
-        self.nova_senha_entry.grid(row=4, column=1)
-
-        ttk.Label(frame, text="Tipo de Conta:").grid(row=5, column=0, sticky="w")
-
-        tk.Radiobutton(frame, text="Corrente", variable=self.tipo_conta_var, value="ContaCorrente", bg="#ecf0f1").grid(row=5, column=1, sticky="w")
-        tk.Radiobutton(frame, text="Poupança", variable=self.tipo_conta_var, value="ContaPoupanca", bg="#ecf0f1").grid(row=6, column=1, sticky="w")
-
-        ttk.Button(frame, text="Criar", command=self.criar_conta).grid(row=7, columnspan=2, pady=10)
-        ttk.Button(frame, text="Voltar", command=self.tela_login).grid(row=8, columnspan=2, pady=5)'''
 
     def tela_principal(self, conta: Conta):
             if conta is None:
