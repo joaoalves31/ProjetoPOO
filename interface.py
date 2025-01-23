@@ -250,6 +250,8 @@ class BancoApp:
             value="ContaPoupança"
         ).pack(pady=5)
 
+        ctk.CTkButton(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
+
         # Botão Criar Conta
         ctk.CTkButton(
             frame, 
