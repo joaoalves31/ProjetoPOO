@@ -10,7 +10,7 @@ from conta_poupanca import ContaPoupanca
 from gerencia_banco_dados import filtro, buscar_conta_por_cpf, buscar_limite_por_cpf
 from cpf_verificacao import validar_cpf, cpf_existe
 from tkinter import ttk, messagebox
-from PIL import Image
+import re
 # Interface gráfica com tkinter
 class BancoApp:
     def __init__(self, banco):
@@ -270,12 +270,12 @@ class BancoApp:
             tipo = self.tipo_conta_var.get()  # Supondo que tipo_conta_var é uma variável StringVar para selecionar tipo
 
             # Validações
-            if not nome.isalpha():
-                messagebox.showerror("Erro", "O nome deve conter apenas letras.")
+            if not re.match(r"^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$", nome.strip()):
+                messagebox.showerror("Erro", "O nome deve conter apenas letras e espaços.")
                 return
 
             if not idade.isdigit() or not (18 <= int(idade) <= 100):
-                messagebox.showerror("Erro", "Idade inválida. Deve ser entre 18 e 100 anos.")
+                messagebox.showerror("Erro", "Idade inválida. Deve ser maior que 18 anos.")
                 return
 
             if not validar_cpf(cpf):  # Função separada para validar CPF
