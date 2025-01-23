@@ -141,26 +141,24 @@ class BancoApp:
             frame,
             text="Entrar",
             command=self.verificar_login,
-            width=250,
+            width=100,
             height=40,
             corner_radius=10,
             font=("Roboto", 14)
         ).pack(pady=20)
 
-
-        voltar_button = ctk.CTkButton(
+        # Voltar button
+        ctk.CTkButton(
             frame,
             text="Voltar",
             command=self.tela_boas_vindas,
             width=100,
             height=30,
-            corner_radius=5,
-            font=("Roboto", 12)
-        )
-        voltar_button.place(relx=0.05, rely=0.95) 
+            corner_radius=10,
+            font=("Roboto", 14)
+        ).pack(pady=10)
 
         self.root.bind("<Return>", lambda event: self.verificar_login())
-
 
     def tela_criar_conta(self):
         for widget in self.root.winfo_children():
@@ -286,10 +284,10 @@ class BancoApp:
         ).pack(side="left", padx=10)
         ctk.CTkRadioButton(
             radio_frame, 
-            text="Poupança",
+            text="Conta Poupança",
             text_color="#2980b9", 
             variable=self.tipo_conta_var, 
-            value="ContaPoupança"
+            value="ContaPoupanca"
         ).pack(side="left", padx=10)
 
         # Botões
