@@ -136,48 +136,35 @@ class Conta(ContaInterface):
             for linha in linhas:
                 arquivo.write(','.join(linha) + '\n')  # Escreve cada linha novamente no arquivo
 
-    def atualizar_saldo_apos_login(self, nome_titular):
-        try:
-            # Passo 1: Procurar o CPF no arquivo de titulares
-            cpf_titular = None
-            with open('titulares.csv', 'r') as f_titulares:
-                reader = csv.reader(f_titulares)
-                for linha in reader:
-                    nome_arquivo = linha[0]  # Nome do titular
-                    cpf_arquivo = linha[2]  # CPF do titular
+    def atualizar_saldo_apos_login(self, nome_titular: str):
+        """Atualiza e retorna o saldo da conta ao fazer login."""
+        # Passo 1: Obter o CPF associado ao nome do titular no arquivo 'titulares.csv'
+        titulares = pegar_linhas_do_arquivo("titulares.csv")
+        cpf = None
+        for titular in titulares:
+            if len(titular) >= 3 and titular[0].strip() == nome_titular.strip():  # Verifica se a linha é válida e compara nomes
+                cpf = titular[2].strip()  # CPF na terceira coluna
+                break
 
-                    if nome_arquivo.lower() == nome_titular.lower():
-                        cpf_titular = cpf_arquivo
-                        break
-
-            if not cpf_titular:
-                print(f"Titular '{nome_titular}' não encontrado no arquivo de titulares.")
-                return None
-
-            # Passo 2: Usar o CPF para buscar o número da conta
-            numero_conta = buscar_numero_conta_por_cpf(cpf_titular)
-
-            if numero_conta is None:
-                print(f"Conta não encontrada para o CPF: {cpf_titular}")
-                return None
-
-            # Passo 3: Procurar o saldo no arquivo de contas usando o número da conta
-            with open('contas.csv', 'r') as f_contas:
-                reader = csv.reader(f_contas)
-                for linha in reader:
-                    if linha[0] == str(numero_conta):  # Verifica o número da conta
-                        self.__saldo = float(linha[2])  # Atualiza o saldo diretamente
-                        return self.saldo  # Use o getter
-
-            print(f"Conta com número '{numero_conta}' não encontrada no arquivo de contas.")
+        if not cpf:
+            print(f"CPF não encontrado para o titular: {nome_titular}")
             return None
 
-        except FileNotFoundError as e:
-            print(f"Arquivo não encontrado: {e}")
+        # Passo 2: Obter o saldo associado ao número da conta no arquivo 'contas.csv'
+        contas = pegar_linhas_do_arquivo("contas.csv")
+        saldo = None
+        for conta in contas:
+            if len(conta) >= 3 and conta[1].strip() == cpf:  # Verifica se a linha é válida e compara CPFs
+                saldo = float(conta[2].strip())  # Saldo na terceira coluna
+                break
+
+        if saldo is None:
+            print(f"Conta não encontrada para o CPF: {cpf}")
             return None
-        except Exception as e:
-            print(f"Erro ao atualizar saldo: {e}")
-            return None
+
+        print(f"Saldo encontrado para a conta: {saldo:.2f}")
+        return saldo
+
 
     # Passando explicitamente o número da conta ao registrar a transação
     def registrar_transacao(self, descricao: str, valor: float = 0.1, conta_destino: int = None): 
