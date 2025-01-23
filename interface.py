@@ -30,122 +30,147 @@ class BancoApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        # Ajuste da borda azul para mais minimalismo
-        outer_frame = ctk.CTkFrame(self.root, fg_color="#2980b9", corner_radius=10)
-        outer_frame.pack(expand=True, padx=40, pady=40)  # Aumentando o padding para afastar mais da borda azul
+        # Frame principal com fundo branco
+        frame = ctk.CTkFrame(self.root, fg_color="#ffffff")
+        frame.pack(expand=True, padx=40, pady=40)
 
-        # Ajuste do frame interior com mais espaçamento
-        frame = ctk.CTkFrame(outer_frame, fg_color="#ffffff", corner_radius=10)
-        frame.pack(expand=True, padx=4, pady=4)  # Ajustando o padding do frame interior
-
+        # Rótulo principal com fonte Roboto
         ctk.CTkLabel(
-            frame, 
-            text="Bem-vindo ao Seu Banco!", 
-            font=("Roboto", 20, "bold"), 
+            frame,
+            text="Bem-vindo ao Seu Banco!",
+            font=("Roboto", 24, "bold"),
             text_color="#2c3e50"
-        ).pack(pady=20, padx=10)
+        ).pack(pady=20)
 
+        # Rótulo secundário com fonte Roboto
         ctk.CTkLabel(
-            frame, 
-            text="Gerencie suas finanças de forma segura e prática.", 
-            font=("Roboto", 14), 
-            text_color="#7f8c8d"
-        ).pack(pady=20 , padx=1)  
+            frame,
+            text="Gerencie suas finanças de forma segura e prática.",
+            font=("Roboto", 14),
+            text_color="#7f8c8d",
+            wraplength=250,
+            justify="center"
+        ).pack(pady=10)
 
+        # Botões com fonte Roboto e cantos arredondados
         ctk.CTkButton(
-            frame, 
-            text="Login", 
-            command=self.tela_login, 
-            height=50, 
-            width=200, 
+            frame,
+            text="Login",
+            command=self.tela_login,
+            height=50,
+            width=200,
             corner_radius=10,
             font=("Roboto", 14)
-        ).pack(pady=15)
+        ).pack(pady=20)
 
         ctk.CTkButton(
-            frame, 
-            text="Criar Conta", 
-            command=self.tela_criar_conta, 
-            height=50, 
-            width=200, 
+            frame,
+            text="Criar Conta",
+            command=self.tela_criar_conta,
+            height=50,
+            width=200,
             corner_radius=10,
             font=("Roboto", 14)
-        ).pack(pady=15)
+        ).pack(pady=10)
 
     def tela_login(self):
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=15)
-        frame.pack(expand=True, padx=20, pady=20)
+        # Create the main frame with increased padding and rounded corners
+        frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=20)
+        frame.pack(expand=True, padx=50, pady=60)  # Increased padding
 
+        # Login title label
         ctk.CTkLabel(
-            frame, 
-            text="Acesse sua conta", 
-            font=("Roboto", 18, "bold"), 
+            frame,
+            text="Acesse sua conta",
+            font=("Roboto", 18, "bold"),
             text_color="#34495e"
-        ).pack(pady=20)
+        ).pack(pady=40)
 
+        # Login label
         ctk.CTkLabel(
-            frame, 
+            frame,
             text="Login",
-            text_color="#34495e",  
+            text_color="#34495e",
             font=("Roboto", 14, "bold")
         ).pack(pady=5)
 
+        # Login entry field
         self.login_entry = ctk.CTkEntry(
-            frame, 
-            width=250, 
-            font=("Roboto", 12), 
+            frame,
+            width=250,
+            font=("Roboto", 12),
             placeholder_text="Digite seu login",
-            fg_color="#ffffff",  # Fundo branco
-            text_color="#2980b9",  # Texto azul
+            fg_color="#ffffff",  # White background
+            text_color="#2980b9"   # Blue text
         )
         self.login_entry.pack(pady=10)
 
+        # Password label
         ctk.CTkLabel(
-            frame, 
+            frame,
             text="Senha",
+            text_color="#34495e",
             font=("Roboto", 14, "bold")
         ).pack(pady=5)
 
+        # Password entry field with asterisk masking
         self.senha_entry = ctk.CTkEntry(
-            frame, 
-            width=250, 
-            show="*", 
-            font=("Roboto", 12), 
+            frame,
+            width=250,
+            show="*",
+            font=("Roboto", 12),
             placeholder_text="Digite sua senha",
-            fg_color="#ffffff",  # Fundo branco
-            text_color="#2980b9",  # Texto azul
+            fg_color="#ffffff",  # White background
+            text_color="#2980b9"   # Blue text
         )
         self.senha_entry.pack(pady=10)
 
+        # Feedback label (initially empty)
         self.feedback_label = ctk.CTkLabel(
-            frame, 
+            frame,
             text="",
-            font=("Roboto", 12),
+            font=("Roboto", 12)
         )
         self.feedback_label.pack(pady=5)
 
+        # Login button
         ctk.CTkButton(
-            frame, 
-            text="Entrar", 
-            command=self.verificar_login, 
-            width=250, 
-            height=40, 
+            frame,
+            text="Entrar",
+            command=self.verificar_login,
+            width=250,
+            height=40,
             corner_radius=10,
             font=("Roboto", 14)
         ).pack(pady=20)
 
+
+        voltar_button = ctk.CTkButton(
+            frame,
+            text="Voltar",
+            command=self.tela_boas_vindas,
+            width=100,
+            height=30,
+            corner_radius=5,
+            font=("Roboto", 12)
+        )
+        voltar_button.place(relx=0.05, rely=0.95) 
+
         self.root.bind("<Return>", lambda event: self.verificar_login())
+
 
     def tela_criar_conta(self):
         for widget in self.root.winfo_children():
             widget.destroy()
 
+        # Frame principal
         frame = ctk.CTkFrame(self.root, fg_color="#ffffff", corner_radius=15)
         frame.pack(expand=True, padx=20, pady=20)
 
+        # Título
         ctk.CTkLabel(
             frame, 
             text="Crie sua conta", 
@@ -162,13 +187,13 @@ class BancoApp:
         ).pack(pady=5)
         self.nome_entry = ctk.CTkEntry(
             frame, 
-            width=250,
+            width=200,  # Tamanho menor
             fg_color="#ffffff", 
             text_color="#2980b9",  
             font=("Roboto", 12), 
             placeholder_text="Digite seu nome completo"
         )
-        self.nome_entry.pack(pady=10)
+        self.nome_entry.pack(pady=8)
 
         # Campo Idade
         ctk.CTkLabel(
@@ -179,13 +204,13 @@ class BancoApp:
         ).pack(pady=5)
         self.idade_entry = ctk.CTkEntry(
             frame, 
-            width=250,
+            width=200,  # Tamanho menor
             fg_color="#ffffff", 
             text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Digite sua idade"
         )
-        self.idade_entry.pack(pady=10)
+        self.idade_entry.pack(pady=8)
 
         # Campo CPF
         ctk.CTkLabel(
@@ -196,13 +221,13 @@ class BancoApp:
         ).pack(pady=5)
         self.cpf_entry = ctk.CTkEntry(
             frame, 
-            width=250,
+            width=200,  # Tamanho menor
             fg_color="#ffffff", 
             text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Digite seu CPF"
         )
-        self.cpf_entry.pack(pady=10)
+        self.cpf_entry.pack(pady=8)
 
         # Campo Login
         ctk.CTkLabel(
@@ -213,13 +238,13 @@ class BancoApp:
         ).pack(pady=5)
         self.novo_login_entry = ctk.CTkEntry(
             frame, 
-            width=250,
+            width=200,  # Tamanho menor
             fg_color="#ffffff", 
             text_color="#2980b9", 
             font=("Roboto", 12), 
             placeholder_text="Crie seu login"
         )
-        self.novo_login_entry.pack(pady=10)
+        self.novo_login_entry.pack(pady=8)
 
         # Campo Senha
         ctk.CTkLabel(
@@ -230,14 +255,14 @@ class BancoApp:
         ).pack(pady=5)
         self.nova_senha_entry = ctk.CTkEntry(
             frame, 
-            width=250,
+            width=200,  # Tamanho menor
             fg_color="#ffffff", 
             text_color="#2980b9", 
             show="*", 
             font=("Roboto", 12), 
             placeholder_text="Crie uma senha"
         )
-        self.nova_senha_entry.pack(pady=10)
+        self.nova_senha_entry.pack(pady=8)
 
         # Seletor de Tipo de Conta
         ctk.CTkLabel(
@@ -247,31 +272,51 @@ class BancoApp:
             font=("Roboto", 14, "bold")
         ).pack(pady=5)
         self.tipo_conta_var = tk.StringVar(value="ContaCorrente")
+
+        # Radio buttons ajustados
+        radio_frame = ctk.CTkFrame(frame, fg_color="#ffffff")  # Frame para melhor organização
+        radio_frame.pack(pady=5)
+
         ctk.CTkRadioButton(
-            frame, 
+            radio_frame, 
             text="Conta Corrente",
             text_color="#2980b9", 
             variable=self.tipo_conta_var, 
             value="ContaCorrente"
-        ).pack(pady=5)
+        ).pack(side="left", padx=10)
         ctk.CTkRadioButton(
-            frame, 
+            radio_frame, 
             text="Poupança",
             text_color="#2980b9", 
             variable=self.tipo_conta_var, 
             value="ContaPoupança"
-        ).pack(pady=5)
+        ).pack(side="left", padx=10)
+
+        # Botões
+        button_frame = ctk.CTkFrame(frame, fg_color="#ffffff")  # Novo frame para organização dos botões
+        button_frame.pack(pady=15)
 
         # Botão Criar Conta
         ctk.CTkButton(
-            frame, 
+            button_frame, 
             text="Criar Conta", 
             command=self.criar_conta, 
-            width=250, 
-            height=40, 
+            width=100,  # Ajuste de tamanho
+            height=35, 
             corner_radius=10,
             font=("Roboto", 14)
-        ).pack(pady=20)
+        ).pack(side="left", padx=10)
+
+        # Botão Voltar
+        ctk.CTkButton(
+            button_frame, 
+            text="Voltar", 
+            command=self.tela_boas_vindas,  # Método para retornar ao menu principal
+            width=100,  # Ajuste de tamanho
+            height=35, 
+            corner_radius=10,
+            font=("Roboto", 14),
+        ).pack(side="left", padx=10)
 
     def criar_conta(self):
             nome = self.nome_entry.get().strip()
