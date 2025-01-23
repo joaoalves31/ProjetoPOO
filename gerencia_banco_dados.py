@@ -113,15 +113,14 @@ def buscar_numero_conta_por_cpf(cpf: str) -> int:
 
 
 def buscar_limite_por_cpf(cpf: str) -> float:
-    """
-    Busca o limite de crédito de um titular com base no CPF no arquivo contas.csv.
-    
-    :param cpf: O CPF do titular.
-    :return: Limite associado ao CPF, ou 0.0 se não encontrado.
-    """
-    with open('contas.csv', mode='r', encoding='utf-8') as file_contas:
-        reader = csv.reader(file_contas)
-        for row in reader:
-            if row[1] == cpf:  # O CPF está na segunda coluna
-                return float(row[3])  # O limite é a última coluna
-    return 0.0
+    try:
+        with open('contas.csv', mode='r', encoding='utf-8') as file_contas:
+            reader = csv.reader(file_contas)
+            for row in reader:
+                if len(row) < 4:  # Verifique se a linha tem pelo menos 4 colunas
+                    continue  # Ignora linhas mal formatadas
+                if row[1] == cpf:  # O CPF está na segunda coluna
+                    return float(row[3])  # O limite é a última coluna
+    except Exception as e:
+        print(f"Erro ao abrir ou processar o arquivo: {e}")
+    return None  # Retorna None se não encontrar o CPF ou houver erro

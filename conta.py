@@ -38,18 +38,14 @@ class Conta(ContaInterface):
     def depositar(self, valor: float):
         if valor <= 0:
             raise ValueError("O valor do depósito deve ser maior que zero.")
-        
-        # Atualiza o saldo da conta
         self.__saldo += valor
         
-        # Atualiza o saldo no arquivo de contas
         self.atualizar_saldo()
         
         nome_titular = self.titular.cpf 
-        # Passo 1: Obter o número da conta associado ao CPF
+
         numero_conta = buscar_conta_por_cpf(nome_titular)
 
-        # Registra a transação
         self.registrar_transacao("Depósito", valor, numero_conta)
 
     def concluir_pix_deposito(self, chave_pix: str) -> float:
@@ -57,25 +53,22 @@ class Conta(ContaInterface):
         if not self.validar_pix(chave_pix):
             raise ValueError("Código PIX inválido ou já utilizado.")
 
-        valor = self.pix_pendentes.pop(chave_pix)  # Remove e obtém o valor associado
+        valor = self.pix_pendentes.pop(chave_pix) 
         self.depositar(valor)
         return valor
 
     
     def gerar_pix_deposito(self, valor: float) -> str:
-        """Gera um código PIX único para depósito e associa ao valor."""
         chave_pix = str(uuid.uuid4())  # Gera um código PIX único
         self.pix_pendentes[chave_pix] = valor
         return chave_pix
     
     def validar_pix(self, chave_pix: str) -> bool:
-        """Verifica se a chave PIX é válida e não foi utilizada."""
         if chave_pix in self.pix_pendentes:
             return True
         return False
 
     def verificar_pix(self, codigo_pix: str) -> bool:
-        """Verifica se o código PIX existe e retorna True se for associado a esta conta."""
         return codigo_pix in self.pix_pendentes
     
 
@@ -84,23 +77,19 @@ class Conta(ContaInterface):
             raise ValueError("O valor da transferência deve ser maior que zero.")
         if valor > self.__saldo:
             raise ValueError("Saldo insuficiente para realizar a transferência.")
-        
-        # Subtrai o valor da conta de origem
+    
         self.__saldo -= valor
-        self.atualizar_saldo()  # Atualiza o saldo da conta origem
+        self.atualizar_saldo()
         
-        # Recupera a conta destino pelo pix
         conta_pix = filtro("pix_registros.csv", 0, str(pix_destino), True)
         if not conta_pix:
             raise ValueError("Conta PIX destino não encontrada.")
         
-        # Recupera a conta destino
         conta_dest = filtro("contas.csv", 0, conta_pix[0][2], True)
         if conta_dest:
-            # Atualiza diretamente o saldo na conta destino
             conta_dest[0][2] = str(float(conta_dest[0][2]) + valor)
             
-            # Atualiza o saldo no arquivo
+
             self.atualizar_saldo_conta_destino(conta_dest[0])  # Passa a linha da conta destino para atualização
             
         return True
@@ -146,24 +135,6 @@ class Conta(ContaInterface):
         with open("contas.csv", 'w', newline='', encoding='utf-8') as arquivo:
             for linha in linhas:
                 arquivo.write(','.join(linha) + '\n')  # Escreve cada linha novamente no arquivo
-
-
-    '''def atualizar_saldo_conta_destino(self, conta_dest):
-        # Lê todas as linhas do arquivo
-        linhas = pegar_linhas_do_arquivo("contas.csv")
-        
-        for i, linha in enumerate(linhas):
-            if linha[0] == str(conta_dest):  # Verifica o número da conta
-                linhas[i] = conta_dest  # Atualiza a linha com a nova conta
-                break
-        
-        # Reescreve todas as linhas no arquivo
-        try:
-            with open("contas.csv", 'w', newline='', encoding='utf-8') as arquivo:
-                writer = csv.writer(arquivo)
-                writer.writerows(linhas)
-        except Exception as e:
-            print(f"Erro ao atualizar o saldo da conta destino: {e}")'''
 
     def atualizar_saldo_apos_login(self, nome_titular):
         try:

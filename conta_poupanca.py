@@ -6,6 +6,9 @@ class ContaPoupanca(Conta):
         super().__init__(titular, tipo, saldo)
         self.__juros = juros
 
+    def depositar(self, valor: float = 0.1):
+        super().depositar()    
+
     def sacar(self, valor):
         if valor <= self.get_saldo():
             self.set_saldo(self.get_saldo() - valor)

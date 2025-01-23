@@ -389,36 +389,43 @@ class BancoApp:
 
 
     def tela_principal(self, conta: Conta):
-            if conta is None:
-                messagebox.showerror("Erro", "Conta não encontrada.")
-                return
-            
-            for widget in self.root.winfo_children():
-                widget.destroy()
+        if conta is None:
+            messagebox.showerror("Erro", "Conta não encontrada.")
+            return
 
-            frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
-            frame.pack(expand=True)
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-            titular_nome = conta.titular.nome
-            print(f"Nome do titular: {titular_nome}")  # Para depuração
-            saldo = conta.atualizar_saldo_apos_login(titular_nome)
+        frame = tk.Frame(self.root, bg="#ecf0f1", padx=20, pady=20)
+        frame.pack(expand=True)
 
-            if saldo is not None:
-                ctk.CTkLabel(frame, text=f"Olá, {titular_nome}!", font=("Roboto", 16), text_color="#2c3e50").pack(pady=10)
-                ctk.CTkLabel(frame, text=f"Saldo: R$ {saldo:.2f}\n", font=("Roboto", 16), text_color="#2c3e50").pack(pady=5)
-                cpf = conta.titular.cpf
-                limite = buscar_limite_por_cpf(cpf)
-                if limite:
-                    ctk.CTkLabel(frame, text=f"Limite: R$ {limite:.2f}\n", font=("Roboto", 16), text_color="#2c3e50").pack(pady=5)
-            else:
-                ctk.CTkLabel(frame, text="Erro ao carregar saldo.").pack(pady=5)
+        titular_nome = conta.titular.nome
+        print(f"Nome do titular: {titular_nome}")  # Para depuração
 
-            ctk.CTkButton(frame, text="Depositar", command=lambda: self.tela_depositar(conta)).pack(pady=5)
-            ctk.CTkButton(frame, text="Transferir", command=lambda: self.tela_transferir(conta)).pack(pady=5)
-            ctk.CTkButton(frame, text="Histórico", command=lambda: self.tela_historico(conta)).pack(pady=5)
-            ctk.CTkButton(frame, text="Ver Chaves PIX", command=lambda: self.tela_chaves_pix(conta)).pack(pady=5)
-            ctk.CTkButton(frame, text="Cadastrar Chave PIX", command=lambda: self.cadastrar_chave_pix_tela(conta)).pack(pady=5)
-            ctk.CTkButton(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
+        saldo = conta.atualizar_saldo_apos_login(titular_nome)
+        print(f"Saldo após login: {saldo}")  # Verificando o saldo retornado
+
+        # Se saldo for None, exibe R$ 0.00
+        if saldo is None:
+            saldo = 0.0
+
+        # Exibir o saldo na tela inicial
+        ctk.CTkLabel(frame, text=f"Saldo: R$ {saldo:.2f}", font=("Roboto", 16), text_color="#2c3e50").pack(pady=10)
+
+        limite = buscar_limite_por_cpf(self.cpf)
+        if limite is not None:
+            ctk.CTkLabel(frame, text=f"Limite: R$ {limite:.2f}\n", font=("Roboto", 16), text_color="#2c3e50").pack(pady=5)
+        else:
+            ctk.CTkLabel(frame, text="Limite não encontrado ou erro ao carregar.", font=("Roboto", 16), text_color="#e74c3c").pack(pady=5)
+
+        # Adicionando botões
+        ctk.CTkButton(frame, text="Depositar", command=lambda: self.tela_depositar(conta)).pack(pady=5)
+        ctk.CTkButton(frame, text="Transferir", command=lambda: self.tela_transferir(conta)).pack(pady=5)
+        ctk.CTkButton(frame, text="Histórico", command=lambda: self.tela_historico(conta)).pack(pady=5)
+        ctk.CTkButton(frame, text="Ver Chaves PIX", command=lambda: self.tela_chaves_pix(conta)).pack(pady=5)
+        ctk.CTkButton(frame, text="Cadastrar Chave PIX", command=lambda: self.cadastrar_chave_pix_tela(conta)).pack(pady=5)
+        ctk.CTkButton(frame, text="Sair", command=self.encerrar_sessao).pack(pady=10)
+
 
     def cadastrar_chave_pix_tela(self, conta: Conta):
         """
